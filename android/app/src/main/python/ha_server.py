@@ -15,7 +15,6 @@ import math
 import os
 import threading
 import time
-import urllib.request
 from collections import OrderedDict
 from pathlib import Path
 from aiohttp import web
@@ -46,7 +45,7 @@ def _detect_app_version():
         from importlib.metadata import version as _package_version
         return _package_version("cuktech-ble-server")
     except Exception:
-        return "1.1.3"
+        return "1.1.4"
 
 
 APP_VERSION = _detect_app_version()

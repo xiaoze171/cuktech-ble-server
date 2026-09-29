@@ -26,7 +26,7 @@
   },
   "ha_server.py": {
     "source": "ha_server.py",
-    "sha256": "32523a7612b40992e80a95ec2001f90e4902527b4a882ae07b9a8797fd9844ae",
+    "sha256": "ce595d099bca12d639743f83e1865c8952c4fb26dd4ffc975307320b609864e1",
     "overlay": false
   },
   "history.py": {
@@ -66,7 +66,7 @@
   },
   "web/config.html": {
     "source": "web/config.html",
-    "sha256": "a1a1ed33a6891232f4f5c3515f1331a7fd31c2fcce0e91e07e9a8c1b7ade0bfd",
+    "sha256": "3d75b01f808e36a422948101ad00025cb3913591b3da2b99a7a62d8ba57f8520",
     "overlay": true
   },
   "web/index.html": {
