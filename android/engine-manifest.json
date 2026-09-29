@@ -66,7 +66,7 @@
   },
   "web/config.html": {
     "source": "web/config.html",
-    "sha256": "3e1a844ee118307cc7a076e95cc2dae671caa9fea493623a262cdfe2364388bb",
+    "sha256": "a1a1ed33a6891232f4f5c3515f1331a7fd31c2fcce0e91e07e9a8c1b7ade0bfd",
     "overlay": true
   },
   "web/index.html": {
