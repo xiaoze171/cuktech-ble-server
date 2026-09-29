@@ -45,7 +45,7 @@ def _detect_app_version():
         from importlib.metadata import version as _package_version
         return _package_version("cuktech-ble-server")
     except Exception:
-        return "1.1.1"
+        return "1.1.2"
 
 
 APP_VERSION = _detect_app_version()

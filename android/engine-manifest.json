@@ -26,7 +26,7 @@
   },
   "ha_server.py": {
     "source": "ha_server.py",
-    "sha256": "35569168a50f6b457249562f8e50b2ed08dcbdc739f766db73c1e4e65f6a8c47",
+    "sha256": "41e8ec7369850e14d200c4799ef9f54c2e91f46da45bb586613ca6ba9d8a9594",
     "overlay": false
   },
   "history.py": {
@@ -66,7 +66,7 @@
   },
   "web/config.html": {
     "source": "web/config.html",
-    "sha256": "7ea2c4e321ec0dbd46a9f9c67702eff5ca9f78d2bba18578562de8ce05e68c95",
+    "sha256": "25bc79080e016ce94b1d7d28d547dba76e6cc63e3cd70eb656f4c3a33f317f43",
     "overlay": true
   },
   "web/index.html": {
@@ -76,7 +76,7 @@
   },
   "web/phone.html": {
     "source": "web/phone.html",
-    "sha256": "fbea4b3fa65b647d19a0861fddd69153a0530e0833fdb3b6a69009c6a7eb41d4",
+    "sha256": "fcccd0bfa4f9cc8e67c2ab21e6eea7fd725f463039946a02b9427be0c1b578e6",
     "overlay": false
   },
   "web/static/app.js": {
@@ -141,12 +141,12 @@
   },
   "web/static/locales/en.js": {
     "source": "web/static/locales/en.js",
-    "sha256": "98d48e4c7f0b99a3eb44d8231b349cd4d166ab1a34bc19ff1380abda69352916",
+    "sha256": "729309b3517e6615a2c678ade0ec11e5fe96cbc1acdca04c4cf5a45214f4453f",
     "overlay": true
   },
   "web/static/locales/zh-CN.js": {
     "source": "web/static/locales/zh-CN.js",
-    "sha256": "8c2ae1feceda401f7b268625fd77e791801875b488886dd744bd41de4e1438de",
+    "sha256": "6a2b139979184757f82546d7fb3f52ecc07b44dcf317ed712883ca1239698410",
     "overlay": true
   },
   "web/static/logo_footer.png": {
@@ -156,12 +156,12 @@
   },
   "web/static/phone.css": {
     "source": "web/static/phone.css",
-    "sha256": "81e1127cf205453c54a9f25996a48a4cc1d808db58f28fdfe0adbdaa18018bd9",
+    "sha256": "6e04dd640631b29395068fede7bbf6ec0e8cada29f0a97816a7e6647de6b00f1",
     "overlay": false
   },
   "web/static/phone.js": {
     "source": "web/static/phone.js",
-    "sha256": "7ab6a456069b73ce60396580c60f07340d3dbe6161f1f1fbd54913a1c96b5c97",
+    "sha256": "a57ce50223d2e78a4ef1fa2bed2992d484e234c0b70cb8926c36a52fa244eff2",
     "overlay": false
   },
   "web/static/plugin_imgs/main_card_ad1204u_unconnected.png": {

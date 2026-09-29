@@ -1162,14 +1162,29 @@ window.addEventListener('pagehide', () => {
 });
 window.addEventListener('pageshow', () => initPhoneSSE());
 
-// ── 卡片自定义排序：长按卡片 0.4s 进入拖动，上下拖到目标位，松手保存 ──
-// 顺序存 localStorage；恢复时移动 DOM 节点（事件监听随之迁移，零破坏）。
+// ── 卡片自定义排序：长按卡片 0.4s 打开排序浮层（紧凑行一屏排完），拖行换位即时生效 ──
+// 手机屏幕一屏只放得下两三张大卡，就地拖动看不到远处目标位；
+// 浮层把所有卡缩成紧凑行全部摆开，排完背后实时预览。顺序存 localStorage，
+// 恢复时移动 DOM 节点（事件监听随之迁移，零破坏）。
 const CARD_ORDER_KEY = 'cuktech-phone-card-order';
 const CARD_SORT_HINT_KEY = 'cuktech-phone-sort-hint-shown';
 const CARD_HOLD_MS = 400;
 const CARD_MOVE_CANCEL_PX = 8;
 // 默认顺序；版本升级新增的卡片按它在默认顺序里的前驱插回，而不是掉到末尾
 const CARD_DEFAULT_ORDER = ['connect', 'total', 'chart', 'scene', 'history', 'portctl', 'screen', 'trickle', 'limit', 'delay'];
+// 浮层行标题用的词条（都在语言包里）
+const CARD_TITLE_KEYS = {
+    connect: 'phone.cardConnect',
+    total: 'phone.totalPowerTitle',
+    chart: 'phone.powerChart',
+    scene: 'phone.sceneMode',
+    history: 'phone.chargeHistory',
+    portctl: 'phone.portControl',
+    screen: 'phone.screenTimeout',
+    trickle: 'phone.usbATrickle',
+    limit: 'chargeLimit.title',
+    delay: 'phone.delayOff',
+};
 
 function applyCardOrder(order) {
     const container = document.querySelector('.bottom-view');
@@ -1193,6 +1208,133 @@ function applyCardOrder(order) {
     for (const el of merged) container.appendChild(el);
 }
 
+let cardSortOverlay = null;
+
+function cardSortRowTitle(id) {
+    const key = CARD_TITLE_KEYS[id];
+    return (key && typeof I18N !== 'undefined') ? (I18N.t(key) || id) : id;
+}
+
+function buildCardSortOverlay() {
+    const ov = document.createElement('div');
+    ov.className = 'card-sort-overlay';
+    const sheet = document.createElement('div');
+    sheet.className = 'card-sort-sheet';
+    const head = document.createElement('div');
+    head.className = 'card-sort-head';
+    const title = document.createElement('span');
+    title.className = 'card-sort-title';
+    const done = document.createElement('button');
+    done.className = 'sim-btn card-sort-done';
+    head.appendChild(title);
+    head.appendChild(done);
+    const rows = document.createElement('div');
+    rows.className = 'card-sort-rows';
+    sheet.appendChild(head);
+    sheet.appendChild(rows);
+    ov.appendChild(sheet);
+    document.body.appendChild(ov);
+    attachRowDrag(rows);
+    // 点背景或「完成」关闭；顺序在每次换位时已保存
+    ov.addEventListener('pointerdown', (e) => {
+        if (e.target === ov || e.target === done) closeCardSortOverlay();
+    });
+    ov.addEventListener('contextmenu', (e) => e.preventDefault());
+    return ov;
+}
+
+function openCardSortOverlay() {
+    if (!cardSortOverlay) cardSortOverlay = buildCardSortOverlay();
+    const rowsEl = cardSortOverlay.querySelector('.card-sort-rows');
+    rowsEl.textContent = '';
+    for (const card of document.querySelectorAll('.bottom-view [data-card]')) {
+        const row = document.createElement('div');
+        row.className = 'card-sort-row';
+        row.dataset.card = card.dataset.card;
+        const grip = document.createElement('span');
+        grip.className = 'card-sort-grip';
+        grip.textContent = '☰';
+        const name = document.createElement('span');
+        name.className = 'card-sort-name';
+        name.textContent = cardSortRowTitle(card.dataset.card);
+        row.appendChild(grip);
+        row.appendChild(name);
+        rowsEl.appendChild(row);
+    }
+    cardSortOverlay.querySelector('.card-sort-title').textContent = I18N.t('phone.sortTitle');
+    cardSortOverlay.querySelector('.card-sort-done').textContent = I18N.t('phone.sortDone');
+    cardSortOverlay.classList.add('open');
+}
+
+function closeCardSortOverlay() {
+    if (cardSortOverlay) cardSortOverlay.classList.remove('open');
+}
+
+function commitRowOrder(rowsEl) {
+    const order = [...rowsEl.querySelectorAll('.card-sort-row')].map(r => r.dataset.card);
+    applyCardOrder(order); // 背后实时预览
+    try { localStorage.setItem(CARD_ORDER_KEY, JSON.stringify(order)); } catch (err) { /* 隐私模式 */ }
+}
+
+// 行拖拽：行很矮，拖动卡视觉中心越过紧邻行中点即换位（一次挂事件，靠委托复用）
+function attachRowDrag(rowsEl) {
+    if (rowsEl.dataset.dragBound) return;
+    rowsEl.dataset.dragBound = '1';
+    let drag = null;
+    const SLOTPX = 6;
+    rowsEl.addEventListener('pointerdown', (e) => {
+        if (drag) return;
+        const row = e.target.closest ? e.target.closest('.card-sort-row') : null;
+        if (!row || !rowsEl.contains(row)) return;
+        drag = { el: row, startX: e.clientX, startY: e.clientY, pid: e.pointerId, active: false };
+    });
+    rowsEl.addEventListener('pointermove', (e) => {
+        if (!drag || e.pointerId !== drag.pid) return;
+        if (!drag.active) {
+            if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < SLOTPX) return;
+            drag.active = true;
+            drag.el.classList.add('dragging');
+            try { drag.el.setPointerCapture(drag.pid); } catch (err) { /* 指针已失效 */ }
+        }
+        drag.el.style.transform = `translateY(${e.clientY - drag.startY}px)`;
+        const rect = drag.el.getBoundingClientRect();
+        const centerY = rect.top + rect.height / 2;
+        const rows = [...rowsEl.querySelectorAll('.card-sort-row')];
+        const idx = rows.indexOf(drag.el);
+        const above = rows[idx - 1];
+        const below = rows[idx + 1];
+        if (above) {
+            const r = above.getBoundingClientRect();
+            if (centerY < r.top + r.height / 2) {
+                rowsEl.insertBefore(drag.el, above);
+                drag.startY = e.clientY;
+                drag.el.style.transform = '';
+                commitRowOrder(rowsEl);
+                return;
+            }
+        }
+        if (below) {
+            const r = below.getBoundingClientRect();
+            if (centerY > r.top + r.height / 2) {
+                rowsEl.insertBefore(drag.el, below.nextSibling);
+                drag.startY = e.clientY;
+                drag.el.style.transform = '';
+                commitRowOrder(rowsEl);
+            }
+        }
+    });
+    const end = (e) => {
+        if (!drag || (e && e.pointerId !== undefined && e.pointerId !== drag.pid)) return;
+        if (drag.active) {
+            drag.el.style.transform = '';
+            drag.el.classList.remove('dragging');
+        }
+        drag = null;
+    };
+    rowsEl.addEventListener('pointerup', end);
+    rowsEl.addEventListener('pointercancel', end);
+}
+
 (function initCardSort() {
     const container = document.querySelector('.bottom-view');
     if (!container) return;
@@ -1209,80 +1351,32 @@ function applyCardOrder(order) {
     // 拖到交互控件上不触发（按钮/开关/下拉/链接/限额卡组自身手势等）
     const INTERACTIVE = 'button, input, select, textarea, option, a, label, .toggle, '
         + '.scene-btn, canvas, .charge-limit-deck, .charge-limit-dots, #sessionDetail';
-    let drag = null;   // { el, startX, startY, holdTimer, active }
-    let sorting = false;
-
-    function preventTouch(e) { e.preventDefault(); } // 拖动期间禁止页面滚动
+    let hold = null;
 
     container.addEventListener('pointerdown', (e) => {
-        if (drag || sorting) return;
+        if (hold || (cardSortOverlay && cardSortOverlay.classList.contains('open'))) return;
         if (e.pointerType === 'mouse' && e.button !== 0) return;
         const card = e.target.closest ? e.target.closest('[data-card]') : null;
         if (!card || !container.contains(card)) return;
         if (e.target.closest(INTERACTIVE)) return;
-        drag = { el: card, startX: e.clientX, startY: e.clientY, holdTimer: null, active: false };
-        drag.holdTimer = setTimeout(() => {
-            if (!drag) return;
-            drag.active = true;
-            sorting = true;
-            drag.el.classList.add('card-dragging');
-            document.addEventListener('touchmove', preventTouch, { passive: false });
-            try { drag.el.setPointerCapture(e.pointerId); } catch (err) { /* 指针已失效 */ }
-        }, CARD_HOLD_MS);
+        const x = e.clientX, y = e.clientY, pid = e.pointerId;
+        hold = {
+            pid, x, y,
+            timer: setTimeout(() => { hold = null; openCardSortOverlay(); }, CARD_HOLD_MS),
+        };
     });
-
-    container.addEventListener('pointermove', (e) => {
-        if (!drag) return;
-        if (!drag.active) {
-            const moved = Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY);
-            if (moved > CARD_MOVE_CANCEL_PX) {
-                clearTimeout(drag.holdTimer);
-                drag = null; // 进入拖动前就移动了 → 当作普通滚动/点击
-            }
-            return;
+    const cancelHold = (e) => {
+        if (!hold) return;
+        if (e.type === 'pointermove') {
+            if (e.pointerId !== hold.pid) return;
+            if (Math.hypot(e.clientX - hold.x, e.clientY - hold.y) <= CARD_MOVE_CANCEL_PX) return;
         }
-        // 拖动跟随：拖动卡视觉中心越过紧邻卡中点即换位（换位后归零重新跟随）
-        drag.el.style.transform = `translateY(${e.clientY - drag.startY}px) scale(1.02)`;
-        const rect = drag.el.getBoundingClientRect();
-        const centerY = rect.top + rect.height / 2;
-        const cards = [...container.querySelectorAll('[data-card]')];
-        const idx = cards.indexOf(drag.el);
-        const above = cards[idx - 1];
-        const below = cards[idx + 1];
-        if (above) {
-            const r = above.getBoundingClientRect();
-            if (centerY < r.top + r.height / 2) {
-                container.insertBefore(drag.el, above);
-                drag.startY = e.clientY;
-                drag.el.style.transform = 'translateY(0) scale(1.02)';
-                return;
-            }
-        }
-        if (below) {
-            const r = below.getBoundingClientRect();
-            if (centerY > r.top + r.height / 2) {
-                container.insertBefore(drag.el, below.nextSibling);
-                drag.startY = e.clientY;
-                drag.el.style.transform = 'translateY(0) scale(1.02)';
-            }
-        }
-    });
-
-    function endDrag() {
-        if (!drag) return;
-        clearTimeout(drag.holdTimer);
-        document.removeEventListener('touchmove', preventTouch);
-        if (drag.active) {
-            drag.el.style.transform = '';
-            drag.el.classList.remove('card-dragging');
-            sorting = false;
-            const order = [...container.querySelectorAll('[data-card]')].map(c => c.dataset.card);
-            try { localStorage.setItem(CARD_ORDER_KEY, JSON.stringify(order)); } catch (err) { /* 隐私模式 */ }
-        }
-        drag = null;
-    }
-    container.addEventListener('pointerup', endDrag);
-    container.addEventListener('pointercancel', endDrag);
+        clearTimeout(hold.timer);
+        hold = null;
+    };
+    container.addEventListener('pointermove', cancelHold);
+    container.addEventListener('pointerup', cancelHold);
+    container.addEventListener('pointercancel', cancelHold);
     // 长按屏蔽系统文本选择菜单
     container.addEventListener('contextmenu', (e) => {
         if (e.target.closest && e.target.closest('[data-card]')) e.preventDefault();

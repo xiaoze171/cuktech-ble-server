@@ -233,7 +233,7 @@ body.light .config-input {
             <div class="config-section-title" data-i18n="config.about">关于</div>
             <div class="config-row">
                 <div class="config-label" data-i18n="config.version">版本</div>
-                <span class="config-value" id="aboutVersion">V1.1.1</span>
+                <span class="config-value" id="aboutVersion">V1.1.2</span>
             </div>
             <div class="config-row">
                 <div class="config-label" data-i18n="config.githubRepo">项目地址</div>
@@ -693,6 +693,21 @@ if (typeof I18N !== 'undefined' && typeof I18N.onChange === 'function') {
         if (btnT) btnT.textContent = _saving ? I18N.t('common.saving') : I18N.t('config.saveRestart');
     });
 }
+
+// ── 关于区版本号：安卓取 App 桥，浏览器取 /api/health；静态文案只作兜底 ──
+(function initAboutVersion() {
+    const el = document.getElementById('aboutVersion');
+    if (!el) return;
+    try {
+        if (window.AndroidSettings && typeof window.AndroidSettings.getVersionName === 'function') {
+            const v = window.AndroidSettings.getVersionName();
+            if (v) { el.textContent = 'V' + v; return; }
+        }
+    } catch (e) { /* 浏览器环境 */ }
+    fetch(API + '/api/health').then((r) => r.json()).then((d) => {
+        if (d && d.version) el.textContent = 'V' + d.version;
+    }).catch(() => { /* 保持静态兜底 */ });
+})();
 
 // ── 更新检测（GitHub Releases）：按钮手动检查；进设置页先回显缓存结果并做节流静默检查 ──
 let _updateChecking = false;
