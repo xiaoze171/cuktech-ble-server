@@ -1,0 +1,68 @@
+plugins {
+    id 'com.android.application'
+    id 'com.chaquo.python'
+}
+
+def local = new Properties()
+def localFile = rootProject.file('local.properties')
+if (localFile.exists()) localFile.withInputStream { local.load(it) }
+def signing = new Properties()
+def signingFile = rootProject.file('signing.properties')
+if (signingFile.exists()) signingFile.withInputStream { signing.load(it) }
+
+android {
+    namespace 'com.cuktech.mobile'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'com.cuktech.mobile'
+        minSdk 24
+        targetSdk 35
+        versionCode 14
+        versionName '1.1.1-android.12'
+        ndk { abiFilters 'arm64-v8a', 'x86_64' }
+        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+    }
+    signingConfigs {
+        if (!signing.isEmpty()) {
+            release {
+                storeFile rootProject.file(signing.getProperty('storeFile'))
+                storePassword signing.getProperty('storePassword')
+                keyAlias signing.getProperty('keyAlias')
+                keyPassword signing.getProperty('keyPassword')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (!signing.isEmpty()) signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    testOptions { unitTests.returnDefaultValues = true }
+    packaging {
+        jniLibs { useLegacyPackaging = true }
+        resources { excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE*', 'META-INF/NOTICE*'] }
+    }
+}
+
+chaquopy {
+    defaultConfig {
+        version '3.11'
+        if (local.getProperty('python.executable')) {
+            buildPython local.getProperty('python.executable')
+        }
+        // The HTTP server loads HTML and images relative to its Python file.
+        extractPackages '*'
+        pip {
+            install '-r', rootProject.file('requirements-android.txt').absolutePath
+        }
+    }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+}

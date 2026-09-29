@@ -190,6 +190,50 @@ class TestAuthMultiframeCap:
         assert result == b"\xaa\xbb" * 100
 
 
+class TestAuthSecondRound:
+    """认证第二轮 (Phase6)：固件不走第二轮时不能空等 8s。"""
+
+    @pytest.mark.asyncio
+    async def test_skips_when_auth_result_already_pending(self):
+        """Phase5 后 auth_ctrl 已收到 Login OK，应立即结束且不消费该结果。"""
+        import time
+        from unittest.mock import AsyncMock
+        from src.cuktech_ble.controller import CuktechBLEController
+
+        ctrl = CuktechBLEController(mac="AA:BB:CC:DD:EE:FF", token="aabbccddeeff")
+        ctrl.client = AsyncMock()
+        ctrl._make_notify_handler("auth_data")
+        ctrl._make_notify_handler("auth_ctrl")("auth_ctrl", bytes([0x21]))
+
+        started = time.monotonic()
+        await ctrl._auth_second_round()
+
+        assert time.monotonic() - started < 1.0
+        assert ctrl.get_pending_notify("auth_ctrl") == bytes([0x21])
+        ctrl.client.write_gatt_char.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_runs_challenge_response_when_device_sends_it(self):
+        """固件发出第二轮挑战时仍按原时序回复第二轮 auth response。"""
+        from unittest.mock import AsyncMock
+        from src.cuktech_ble.controller import CuktechBLEController
+        from src.cuktech_ble.protocol import CHAR_AUTH_DATA
+
+        ctrl = CuktechBLEController(mac="AA:BB:CC:DD:EE:FF", token="aabbccddeeff")
+        ctrl.client = AsyncMock()
+        push = ctrl._make_notify_handler("auth_data")
+        ctrl._make_notify_handler("auth_ctrl")
+        response = bytes([0x00, 0x00, 0x0c]) + bytes(range(32))
+        push("auth_data", bytes([0x00, 0x00, 0x0d]) + bytes(16))
+        push("auth_data", response)
+        push("auth_data", bytes([0x00, 0x00, 0x01, 0x01]))
+
+        await ctrl._auth_second_round()
+
+        writes = [c.args for c in ctrl.client.write_gatt_char.await_args_list]
+        assert writes[-1] == (CHAR_AUTH_DATA, bytes([0x01, 0x00, 0x0c]) + response[3:])
+
+
 class TestSendEncryptedClearQueue:
     """ble-warnings P2: _send_encrypted 写命令前清空 cmd_send 队列。
 

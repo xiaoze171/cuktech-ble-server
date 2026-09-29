@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CUKTECH</string>
+    <string name="preparing">正在准备手机端服务…\n首次启动可能需要稍等片刻。</string>
+    <string name="preparing_page">正在打开充电器页面…</string>
+    <string name="stopping">正在停止服务并断开蓝牙…</string>
+    <string name="runtime_stopped">手机端服务已停止。点击重试即可启动。</string>
+    <string name="retry">重试</string>
+    <string name="stop">停止</string>
+    <string name="open_app_settings">打开应用权限设置</string>
+    <string name="permission_required">需要蓝牙相关权限才能运行手机端服务。请允许“附近的设备”；Android 11 及更早版本还需要定位权限以扫描蓝牙设备。授权后点击重试。</string>
+    <string name="service_start_failed">服务未能启动，请重试。</string>
+    <string name="page_load_failed">页面加载失败。请确认服务正在运行，然后重试。</string>
+    <string name="notification_channel">充电器连接</string>
+    <string name="notification_channel_description">手机端蓝牙连接、状态监控和充电记录</string>
+    <string name="notification_running">手机端服务运行中：蓝牙连接、状态监控和充电记录。点击打开。</string>
+    <string name="notification_ble_stuck">蓝牙连接异常：请在系统设置中关闭再打开手机蓝牙，然后点击重试。</string>
+    <string name="bluetooth_unavailable">此设备没有可用的蓝牙适配器。仍可查看配置和历史记录。</string>
+    <string name="bluetooth_disabled_hint">蓝牙未开启。仍可查看配置和历史记录，开启系统蓝牙后可连接充电器。</string>
+    <string name="location_title">开启定位服务以扫描蓝牙</string>
+    <string name="location_message">Android 11 及更早版本需要系统定位服务才能扫描蓝牙设备。应用不会收集您的位置。也可以先查看配置和历史记录。</string>
+    <string name="open_settings">打开设置</string>
+    <string name="continue_without_bluetooth">继续查看页面</string>
+    <string name="no_browser">未找到可打开链接的浏览器。</string>
+    <string name="unsupported_download">仅支持导出本机充电历史 CSV。</string>
+    <string name="no_document_picker">未找到文件保存程序。</string>
+    <string name="export_saved">CSV 已保存。</string>
+    <string name="export_failed">CSV 保存失败，请重新导出。</string>
+</resources>

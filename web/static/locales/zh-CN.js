@@ -34,6 +34,11 @@
             minutes: '{{count}}分钟'
         },
 
+        // ── Notices ──
+        notice: {
+            bleStuck: '蓝牙连接异常，请关闭再打开手机蓝牙后重试'
+        },
+
         // ── Power units ──
         power: {
             total: '总功率 (W)',
@@ -216,6 +221,7 @@
             totalPowerTitle: '当前总功率',
             currentPower: '当前功率',
             powerChart: '功率曲线',
+            rangeLive: '5分钟',
             powerDist: '功率占比',
             chargeHistory: '充电记录',
             delayOff: '延时关闭',
@@ -229,6 +235,7 @@
             title: '系统配置',
             bleDevice: 'BLE 设备',
             xiaomiAuto: '小米云自动获取',
+            bleQRHint: '点击「获取二维码」，用米家 App 扫码后自动填入设备信息',
             mac: 'MAC 地址',
             macHint: '充电器蓝牙 MAC 地址',
             tokenHint: '设备认证 Token (十六进制)',
@@ -266,6 +273,12 @@
             logLevelHint: '即时生效，无需重启；error 最少，debug 最详细',
             logLevelSet: '日志等级已设为 {{level}}',
             currentStatus: '当前状态',
+            about: '关于',
+            version: '版本',
+            githubRepo: '项目地址',
+            githubLink: 'github.com/xiaoze171/cuktech-ble-server ↗',
+            githubUpstream: '上游项目',
+            githubUpstreamLink: 'github.com/kairui1108/cuktech-ble-server ↗',
             loaded: '配置已加载',
             loadFailed: '加载失败: {{msg}}',
             saveRestart: '保存配置并重启',

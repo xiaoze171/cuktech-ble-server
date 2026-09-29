@@ -32,7 +32,7 @@ jobs:
 
       - name: Sync files
         run: |
-          rsync -av --delete --exclude='.git' --exclude='.github' --exclude='.venv' --exclude='__pycache__' --exclude='*.pyc' /tmp/upstream/ble_server/ ./
+          rsync -av --delete --exclude='.git' --exclude='.github' --exclude='.venv' --exclude='__pycache__' --exclude='*.pyc' --exclude='/android/' --exclude='/docs/superpowers/' /tmp/upstream/ble_server/ ./
           cp /tmp/upstream/docs/server-readme.md README.md
           cp /tmp/upstream/docs/server-readme-en.md README.en.md
           mkdir -p systemd

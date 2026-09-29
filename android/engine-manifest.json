@@ -1,0 +1,382 @@
+{
+  "bemfa_client.py": {
+    "source": "bemfa_client.py",
+    "sha256": "736bbded23c292076b24dd6113cb0fc1dfa0a58c243e29e6065e22b134ccb132",
+    "overlay": false
+  },
+  "ble_manager.py": {
+    "source": "ble_manager.py",
+    "sha256": "5ede2596068de53cb87402cc7c838431a6740f5f80456157838351b21e4bf0ae",
+    "overlay": false
+  },
+  "config.py": {
+    "source": "config.py",
+    "sha256": "51bececaa2518903d57646079cd54086683239553bf31cb2b9b8427b46fe51d0",
+    "overlay": false
+  },
+  "downsample.py": {
+    "source": "downsample.py",
+    "sha256": "b04b513716cf6b36fe59df0c097992a403836c25fc1cc3cbf12b73b5eb769a65",
+    "overlay": false
+  },
+  "energy.py": {
+    "source": "energy.py",
+    "sha256": "44b841d5c0d56a1b900957335dd64332046e2f229759eb8cafd12fddd9134318",
+    "overlay": false
+  },
+  "ha_server.py": {
+    "source": "ha_server.py",
+    "sha256": "35569168a50f6b457249562f8e50b2ed08dcbdc739f766db73c1e4e65f6a8c47",
+    "overlay": false
+  },
+  "history.py": {
+    "source": "history.py",
+    "sha256": "2bc30e136e24fe26bdee58c1d0f61a409f9bc4befdbeaf1700bdf1f5073efbea",
+    "overlay": false
+  },
+  "src/cuktech_ble/__init__.py": {
+    "source": "src/cuktech_ble/__init__.py",
+    "sha256": "295a0975288b5dcce945d502b843d87758b4bbe5c3669bfdb0535691fdd806cd",
+    "overlay": false
+  },
+  "src/cuktech_ble/cli.py": {
+    "source": "src/cuktech_ble/cli.py",
+    "sha256": "b8d19996eae6d3cc7a82bcc9cc18974f474fb532cd0e8f193326c4c5d457b73e",
+    "overlay": false
+  },
+  "src/cuktech_ble/controller.py": {
+    "source": "src/cuktech_ble/controller.py",
+    "sha256": "7bcda4394920d8693eaf1e5f3e8359a07414a2fe2235a3ff1117f1347dde1744",
+    "overlay": false
+  },
+  "src/cuktech_ble/protocol.py": {
+    "source": "src/cuktech_ble/protocol.py",
+    "sha256": "538878bb24c306f4d1c01bb60e224c219b4465da409818e29c7292e06dff61de",
+    "overlay": false
+  },
+  "state.py": {
+    "source": "state.py",
+    "sha256": "4337c421eb3fafadfddfb737b30710d11f765cc95fa2d8a6f4975b8b250da521",
+    "overlay": false
+  },
+  "state_protocol_v2.py": {
+    "source": "state_protocol_v2.py",
+    "sha256": "d412f0aa1986e745b64b6ba8d400d57a10af9bbc9cb5f00e944bfab553ba602c",
+    "overlay": false
+  },
+  "web/config.html": {
+    "source": "web/config.html",
+    "sha256": "30c027c61cf076ede5839d96c1ac94d62315d7dfe1273104d3dd9a6dc61962d3",
+    "overlay": true
+  },
+  "web/index.html": {
+    "source": "web/index.html",
+    "sha256": "858c493dd42f1464601cc2137444e1233493768eb1dfa77145447453a48e98f6",
+    "overlay": true
+  },
+  "web/phone.html": {
+    "source": "web/phone.html",
+    "sha256": "add970c7437170fd221e751bff822f2c40db7a20eeb67c58ae3e4032f6ea6da8",
+    "overlay": false
+  },
+  "web/static/app.js": {
+    "source": "web/static/app.js",
+    "sha256": "6e4dd32f97356d0e1b0b9b043ac5b1beef287b54e72b130104044a061e77a46e",
+    "overlay": true
+  },
+  "web/static/charge_history.js": {
+    "source": "web/static/charge_history.js",
+    "sha256": "9388b7ea8ab1cf1e9196eeae04763654551d6a39233884eab25a3c7d2fedff47",
+    "overlay": false
+  },
+  "web/static/charge_limit.js": {
+    "source": "web/static/charge_limit.js",
+    "sha256": "0ba756991dc303d448d40c25562a50b84432a261bc2fe279b8bc4b091f3ffab6",
+    "overlay": false
+  },
+  "web/static/charger.png": {
+    "source": "web/static/charger.png",
+    "sha256": "7519fbc5ae08d394992468b9266ee5478d1d1978324e8a9a4733c5f2a1af30f1",
+    "overlay": false
+  },
+  "web/static/chart-config.js": {
+    "source": "web/static/chart-config.js",
+    "sha256": "34272afaae273df3f30592b76c6446923c96a2d01958a89ae96ec45226a2faaa",
+    "overlay": false
+  },
+  "web/static/chart-loader.js": {
+    "source": "web/static/chart-loader.js",
+    "sha256": "4a59c19bff3ffc63b81f757dd8ab4647e7a5dcc65406222f436dae0bc2c110d4",
+    "overlay": false
+  },
+  "web/static/chart.umd.min.js": {
+    "source": "web/static/chart.umd.min.js",
+    "sha256": "e49825b9bc05076246e2aa8587a0335745f2d47dc24c66ac6832dbbe3a38b0d2",
+    "overlay": false
+  },
+  "web/static/countdown.html": {
+    "source": "web/static/countdown.html",
+    "sha256": "15a4775285bd36d555e40e5daf0bcfc96a688ff6713f3facbebc0d900f222af5",
+    "overlay": false
+  },
+  "web/static/device_info.html": {
+    "source": "web/static/device_info.html",
+    "sha256": "7e7402597ebdf645caf8a9238e64d39348315626e4748b3036f1caf7cbe6671b",
+    "overlay": false
+  },
+  "web/static/favicon.ico": {
+    "source": "web/static/favicon.ico",
+    "sha256": "2ca94953ccd90d9129e8dd343bdbaad864344680f02cd5c5d19696a0f33bc580",
+    "overlay": false
+  },
+  "web/static/i18n.js": {
+    "source": "web/static/i18n.js",
+    "sha256": "014bf0cc8cba62e07bf2ca6484e9ad9fecb2a136e142bd4230baefcf8c58db77",
+    "overlay": false
+  },
+  "web/static/index.css": {
+    "source": "web/static/index.css",
+    "sha256": "b9f7f1f9c30746fc758873faf8e6ea6c68f69dce91c39e09f38fb9e1a93f8812",
+    "overlay": true
+  },
+  "web/static/locales/en.js": {
+    "source": "web/static/locales/en.js",
+    "sha256": "3f13fda06910a9cb70c6e2c046fed0ecae200a3733474bfd2d44236581bfd857",
+    "overlay": true
+  },
+  "web/static/locales/zh-CN.js": {
+    "source": "web/static/locales/zh-CN.js",
+    "sha256": "037e116aa8394abcc8686c34cee026b3fe371114ed1b0fc0d6a3079f2b4f0615",
+    "overlay": true
+  },
+  "web/static/logo_footer.png": {
+    "source": "web/static/logo_footer.png",
+    "sha256": "0fddfdfb01c452a464ec99f4b59d662d8c6a00a607a3a79cd4c3806ae067518e",
+    "overlay": false
+  },
+  "web/static/phone.css": {
+    "source": "web/static/phone.css",
+    "sha256": "babcae72fbf5db98e4eb3d279ea3fe3c0fefec2fa6013582be7cf46005b48474",
+    "overlay": false
+  },
+  "web/static/phone.js": {
+    "source": "web/static/phone.js",
+    "sha256": "479a9001b1ec5319f49aced88b9b0aaea5b9111dea48eb763fc9368a2dee38a8",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_ad1204u_unconnected.png": {
+    "source": "web/static/plugin_imgs/main_card_ad1204u_unconnected.png",
+    "sha256": "37af79d767cfe174baaa62c5d0d487fe468b9928352d6098feb9d3512b87e22c",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_port_a_off.png": {
+    "source": "web/static/plugin_imgs/main_card_port_a_off.png",
+    "sha256": "89c0bceda843041053bb25292722be7cbe8ab6145c7f204bdf369658de89d167",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_port_a_on.png": {
+    "source": "web/static/plugin_imgs/main_card_port_a_on.png",
+    "sha256": "e945d1d4d465ddb4bc4d88fbd20c68271329dcc0db8854970792d0c21d412886",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_port_c1_off.png": {
+    "source": "web/static/plugin_imgs/main_card_port_c1_off.png",
+    "sha256": "2450fdc0cc030e900927710b92d5a824db17c09dd17d70a355b2b9a922624943",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_port_c1_on.png": {
+    "source": "web/static/plugin_imgs/main_card_port_c1_on.png",
+    "sha256": "a17e943d5d7e79b41775d0728192f3b5f8c7f1ec17e5d7500a0f97748a6c6e95",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_port_c2_off.png": {
+    "source": "web/static/plugin_imgs/main_card_port_c2_off.png",
+    "sha256": "474557b3f34b3adc2faf8101dde12907ca1cb171f04c232401a84fe7f0e4ae06",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_port_c2_on.png": {
+    "source": "web/static/plugin_imgs/main_card_port_c2_on.png",
+    "sha256": "0cd84d936b0faf45a64b059aa24d206faa3d25b5a0d806fd7d589e6f631fe31f",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_port_c3_off.png": {
+    "source": "web/static/plugin_imgs/main_card_port_c3_off.png",
+    "sha256": "953b1a9f04a22aca95535f28862ff7073e71de765f29dfb5a4d8b2ca463d6af5",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_port_c3_on.png": {
+    "source": "web/static/plugin_imgs/main_card_port_c3_on.png",
+    "sha256": "5e3358c48fc1ee38dc98187b745560a08dc1855aeb798af6ccdf919a46744bfe",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_scene_icon_ai.png": {
+    "source": "web/static/plugin_imgs/main_card_scene_icon_ai.png",
+    "sha256": "d2a547282bf6d9b0d8d83ac909be2cafdc5b64fbf05b851b57f1d7c5cb0ce554",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_scene_icon_apple.png": {
+    "source": "web/static/plugin_imgs/main_card_scene_icon_apple.png",
+    "sha256": "8ce6144c3033a01519f8538c04d12954ce0b75d846afa67f2c398f98fa890259",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_scene_icon_balance.png": {
+    "source": "web/static/plugin_imgs/main_card_scene_icon_balance.png",
+    "sha256": "063452108281c7d8dc17d9632f7922eabbae05cdf7e1b52492ad844fbb86d77e",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_scene_icon_single.png": {
+    "source": "web/static/plugin_imgs/main_card_scene_icon_single.png",
+    "sha256": "eee1ad253bffad4906020719eea8dad6c1f7145677dfea5f430d62ac672ab6d9",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_usb_a_rectangle.png": {
+    "source": "web/static/plugin_imgs/main_card_usb_a_rectangle.png",
+    "sha256": "54bd03964832fe53a8bd30f63cb5869ce9931820e332e5ce768aabfc668deefe",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_card_usb_c_rectangle.png": {
+    "source": "web/static/plugin_imgs/main_card_usb_c_rectangle.png",
+    "sha256": "d380c4179fe251f3ea670e055b2888c83db7d1c3dc8309a70a31ca758dc642f5",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_dark_ad1204_all.png": {
+    "source": "web/static/plugin_imgs/main_charger_dark_ad1204_all.png",
+    "sha256": "222cd6684d71864df6e8888d78628ed44690e48af87bdd144f886e6dc9e6edd3",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_dark_ai_off.png": {
+    "source": "web/static/plugin_imgs/main_charger_dark_ai_off.png",
+    "sha256": "6d9757954b3d90d3d344476a3926f220c1416eea149b590f6959f88826f53cab",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_dark_ai_on.png": {
+    "source": "web/static/plugin_imgs/main_charger_dark_ai_on.png",
+    "sha256": "951c6f5a54468fc1fc0636d6780a188f10b2e78c9c16ffbccab0dd7c54526f00",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_dark_balance_off.png": {
+    "source": "web/static/plugin_imgs/main_charger_dark_balance_off.png",
+    "sha256": "6689360b53cffa2121a281a68103ec15a50089e6187f522fe6a87da8b4b61714",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_dark_balance_on.png": {
+    "source": "web/static/plugin_imgs/main_charger_dark_balance_on.png",
+    "sha256": "d587d197b121773e0186ed9895c4ac02c242c1ea929e99b259f43e35bd0f09df",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_dark_icon_more.png": {
+    "source": "web/static/plugin_imgs/main_charger_dark_icon_more.png",
+    "sha256": "ded05c03739e384399140f70c47b7419d26ee7498ccadaecde8bcbdba0817bda",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_dark_mac_off.png": {
+    "source": "web/static/plugin_imgs/main_charger_dark_mac_off.png",
+    "sha256": "ceff49764fd488e04794545d27d55602349226331896130db4eba78edca683e0",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_dark_mac_on.png": {
+    "source": "web/static/plugin_imgs/main_charger_dark_mac_on.png",
+    "sha256": "af11c79313240563d236355e93adad5766779eee6d0d3d250225ac388403589b",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_dark_power_on.png": {
+    "source": "web/static/plugin_imgs/main_charger_dark_power_on.png",
+    "sha256": "a745a6d19102e48389c4df10abfbea3d3e04b1f606b75a7ca695d1f2323ccd94",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_dark_single_off.png": {
+    "source": "web/static/plugin_imgs/main_charger_dark_single_off.png",
+    "sha256": "0f5548f9efefdaa0ce9c256f1549ed8c780335305419e98f4c7a2defbaa13d14",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_dark_single_on.png": {
+    "source": "web/static/plugin_imgs/main_charger_dark_single_on.png",
+    "sha256": "5c9403e52acf4d81eddff1c9e0e8a5433c76c5d0ee4b18fa99e119efd8726111",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_light_ad1204_all.png": {
+    "source": "web/static/plugin_imgs/main_charger_light_ad1204_all.png",
+    "sha256": "d53acfb5f0adae848296342cbdecd98396eed331bd221d318469f378c7e2d831",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_light_ai_off.png": {
+    "source": "web/static/plugin_imgs/main_charger_light_ai_off.png",
+    "sha256": "a3a08ea82b10610975459fb69af4f352c66cc76fbe1b62e21b3a429753cd5f0c",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_light_ai_on.png": {
+    "source": "web/static/plugin_imgs/main_charger_light_ai_on.png",
+    "sha256": "dde49b39112302331142e004bbec2f2f05e25324ad6e5c13d1b1ff8c60e09483",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_light_balance_off.png": {
+    "source": "web/static/plugin_imgs/main_charger_light_balance_off.png",
+    "sha256": "b79168ad35fa55ef7cdfd0c8892d8871bc3bca851537d3715e2343c94e84af76",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_light_balance_on.png": {
+    "source": "web/static/plugin_imgs/main_charger_light_balance_on.png",
+    "sha256": "209be65bd6415ee73c7d06a6e2a0d71b05ba4a314358f2b2da4cb631892e26a1",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_light_mac_off.png": {
+    "source": "web/static/plugin_imgs/main_charger_light_mac_off.png",
+    "sha256": "2e6d9c2f321115832f5cc2639f4d4e3b4408238271eec74e88c0c5fd49a14098",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_light_mac_on.png": {
+    "source": "web/static/plugin_imgs/main_charger_light_mac_on.png",
+    "sha256": "fe059be578ca9860f837fdbb7059a2b24efd7ed8133eda1c440c1bb77f82fdcf",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_light_power_on.png": {
+    "source": "web/static/plugin_imgs/main_charger_light_power_on.png",
+    "sha256": "1fa88566fe2d25bfa8220ad19e87dd639d196b90c15124bb6e1e73dd4a9cacfa",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_light_single_off.png": {
+    "source": "web/static/plugin_imgs/main_charger_light_single_off.png",
+    "sha256": "561e0f96e7c99ecde908043df8528274884e8d2e6f95e5834992e3e07a0b3f77",
+    "overlay": false
+  },
+  "web/static/plugin_imgs/main_charger_light_single_on.png": {
+    "source": "web/static/plugin_imgs/main_charger_light_single_on.png",
+    "sha256": "1cdc32ad5fc31ee1fb3a298636fa4ab2a17629c79d44b110424e65138675394c",
+    "overlay": false
+  },
+  "web/static/port_monitor.html": {
+    "source": "web/static/port_monitor.html",
+    "sha256": "3fc53964fc3ac3d075222d60f84dfc150926d1ee5ab4f741c1c577bf3f4dca38",
+    "overlay": false
+  },
+  "web/static/power_chart.html": {
+    "source": "web/static/power_chart.html",
+    "sha256": "ebd99eb783da2b7e28291d0f2c84444de3d25c6b09998c247a99199292dbe06b",
+    "overlay": false
+  },
+  "xiaomi_cloud.py": {
+    "source": "xiaomi_cloud.py",
+    "sha256": "863cb094e945b2cb66853fabf3400eb3a0245c61ff31160dc7a705bc75efa9a1",
+    "overlay": false
+  },
+  "android_config.py": {
+    "source": "android/app/src/main/python/android_config.py",
+    "sha256": "1c89c0689a61bcb91e8bb78829ba6e73d4e04723ebf72a0245f8ff759c4024bd",
+    "adapter": true
+  },
+  "android_runtime.py": {
+    "source": "android/app/src/main/python/android_runtime.py",
+    "sha256": "e0e81232779b473c417383252e6be94d2684842ee8967cf8a2fd690299b2ad8a",
+    "adapter": true
+  },
+  "bleak/__init__.py": {
+    "source": "android/app/src/main/python/bleak/__init__.py",
+    "sha256": "d7bd7bfccdcca5b13b943a8097723d03281a2887b66ba42cdfeaa1c6f0ab6a97",
+    "adapter": true
+  },
+  "src/__init__.py": {
+    "source": "android/app/src/main/python/src/__init__.py",
+    "sha256": "1bac30bbd78698a2bcabcd8d440f8135b32eec2b3a81e26cedeb2e940bcb5edb",
+    "adapter": true
+  }
+}

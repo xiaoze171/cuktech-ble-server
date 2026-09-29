@@ -34,6 +34,11 @@
             minutes: { one: '1 min', other: '{{count}} min' }
         },
 
+        // ── Notices ──
+        notice: {
+            bleStuck: 'Bluetooth looks unresponsive. Turn Bluetooth off and on again, then retry.'
+        },
+
         // ── Power units ──
         power: {
             total: 'Total Power (W)',
@@ -216,6 +221,7 @@
             totalPowerTitle: 'Current Total Power',
             currentPower: 'Current Power',
             powerChart: 'Power Chart',
+            rangeLive: '5 min',
             powerDist: 'Power Distribution',
             chargeHistory: 'Charge History',
             delayOff: 'Delay Off',
@@ -229,6 +235,7 @@
             title: 'System Config',
             bleDevice: 'BLE Device',
             xiaomiAuto: 'Get from Xiaomi Cloud',
+            bleQRHint: 'Tap "Get QR Code" and scan it with the Mi Home App to fill in the device info automatically',
             mac: 'MAC Address',
             macHint: 'Charger BLE MAC address',
             tokenHint: 'Device auth Token (hex)',
@@ -266,6 +273,12 @@
             logLevelHint: 'Takes effect immediately, no restart needed; error is quietest, debug most verbose',
             logLevelSet: 'Log level set to {{level}}',
             currentStatus: 'Status',
+            about: 'About',
+            version: 'Version',
+            githubRepo: 'Project',
+            githubLink: 'github.com/xiaoze171/cuktech-ble-server ↗',
+            githubUpstream: 'Upstream',
+            githubUpstreamLink: 'github.com/kairui1108/cuktech-ble-server ↗',
             loaded: 'Config loaded',
             loadFailed: 'Failed to load: {{msg}}',
             saveRestart: 'Save & Restart',

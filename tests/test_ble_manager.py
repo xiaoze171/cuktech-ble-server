@@ -342,6 +342,57 @@ class TestConnectDisconnect:
         await mgr.stop()
         assert mgr._stop_event.is_set()
 
+    @pytest.mark.asyncio
+    async def test_initial_ports_are_available_before_settings_finish(self):
+        mgr = make_manager()
+        ctrl = MagicMock()
+        ctrl.connect = AsyncMock()
+        ctrl.read_device_info = AsyncMock()
+        ctrl.authenticate = AsyncMock(return_value=True)
+        ctrl.init_push_frames = [b'\x00\x00\x02\x00' + bytes(16)]
+        ctrl.decrypt.return_value = bytes.fromhex('0f20380004010201000450010b19c9')
+        ctrl.device_model = 'test'
+        ctrl.firmware_version = 'test'
+        snapshots = []
+
+        async def read_settings():
+            snapshots.append((mgr.state.ports[1].voltage, mgr.state.ports[1].current))
+
+        mgr._read_initial_settings = read_settings
+        with patch('bleak.BleakScanner.find_device_by_address', new=AsyncMock(return_value=object())), \
+                patch('ble_manager.CuktechBLEController', return_value=ctrl), \
+                patch('asyncio.sleep', new=AsyncMock()):
+            await mgr._connect()
+
+        assert snapshots == [(20.1, 2.5)]
+
+    @pytest.mark.asyncio
+    async def test_known_disconnection_exits_without_waiting_for_settings_or_watchdog(self):
+        mgr = make_manager()
+        mgr._connect = AsyncMock()
+        mgr.ctrl = MagicMock()
+        mgr.ctrl.client.is_connected = False
+
+        async def no_notifications(*args, **kwargs):
+            await asyncio.sleep(0.01)
+            raise asyncio.TimeoutError
+
+        mgr.ctrl.wait_notify = no_notifications
+
+        with pytest.raises(ConnectionError, match='disconnect'):
+            await asyncio.wait_for(mgr._connect_and_run(), timeout=0.2)
+
+    @pytest.mark.asyncio
+    async def test_disconnect_releases_client_even_after_native_link_is_lost(self):
+        mgr = make_manager()
+        ctrl = MagicMock()
+        ctrl.client.is_connected = False
+        ctrl.client.disconnect = AsyncMock()
+        mgr.ctrl = ctrl
+        await mgr._disconnect()
+        ctrl.client.disconnect.assert_awaited_once()
+        assert not mgr.state.connected
+
 
 class TestInvalidate:
     """Test cache invalidation."""
@@ -1408,3 +1459,210 @@ class TestAuthBackoff:
         assert BLEManager._should_restart_process(14) is False
         assert BLEManager._should_restart_process(15) is True
         assert BLEManager._should_restart_process(100) is True
+
+
+class TestBluetoothStuckDetection:
+    """连续扫描失败后，区分“充电器不在范围”与“本机蓝牙栈卡死”。"""
+
+    @pytest.mark.asyncio
+    async def test_probe_absent_below_threshold(self):
+        """未达到阈值不探测、不提示。"""
+        mgr = make_manager()
+        mgr._probe_visible_ble_devices = AsyncMock(return_value=0)
+        mgr._scan_fail_streak = mgr.BLE_STUCK_SCAN_FAILURES - 1
+        await mgr._check_bluetooth_stuck()
+        mgr._probe_visible_ble_devices.assert_not_awaited()
+        assert mgr.notice == ""
+
+    @pytest.mark.asyncio
+    async def test_authenticated_connection_clears_notice_before_reading_settings(self):
+        mgr = make_manager()
+        mgr.notice = "ble_stuck_need_radio_reset"
+        mgr._scan_fail_streak = 5
+        mgr._stop_ble_scan = AsyncMock()
+        ctrl = MagicMock()
+        ctrl.connect = AsyncMock()
+        ctrl.read_device_info = AsyncMock()
+        ctrl.authenticate = AsyncMock(return_value=True)
+        ctrl.init_push_frames = []
+        ctrl.device_model = "test"
+        ctrl.firmware_version = "test"
+
+        async def read_settings():
+            assert mgr.notice == ""
+            assert mgr._scan_fail_streak == 0
+            assert mgr.state.authenticated
+
+        mgr._read_initial_settings = read_settings
+        with patch("bleak.BleakScanner.find_device_by_address", new=AsyncMock(return_value=object())), \
+                patch("ble_manager.CuktechBLEController", return_value=ctrl), \
+                patch("asyncio.sleep", new=AsyncMock()):
+            await mgr._connect()
+
+    @pytest.mark.asyncio
+    async def test_visible_radio_clears_existing_notice_and_publishes_clear(self):
+        mgr = make_manager()
+        mgr.notice = "ble_stuck_need_radio_reset"
+        mgr._scan_fail_streak = mgr.BLE_STUCK_SCAN_FAILURES
+        mgr._probe_visible_ble_devices = AsyncMock(return_value=2)
+        emitter = MagicMock()
+        mgr.set_sse_emitter(emitter)
+        await mgr._check_bluetooth_stuck()
+        assert mgr.notice == ""
+        assert emitter.emit.call_args.args[1]["notice"] == ""
+
+    @pytest.mark.asyncio
+    async def test_inconclusive_probe_does_not_reset_or_warn(self):
+        mgr = make_manager()
+        mgr._probe_visible_ble_devices = AsyncMock(return_value=-1)
+        mgr._reset_local_bluetooth = AsyncMock()
+        mgr._scan_fail_streak = mgr.BLE_STUCK_SCAN_FAILURES
+        await mgr._check_bluetooth_stuck()
+        mgr._reset_local_bluetooth.assert_not_awaited()
+        assert mgr.notice == ""
+
+    @pytest.mark.asyncio
+    async def test_finding_charger_clears_scan_warning_even_if_gatt_fails(self):
+        mgr = make_manager()
+        mgr.notice = "ble_stuck_need_radio_reset"
+        mgr._scan_fail_streak = 5
+        mgr._stop_ble_scan = AsyncMock()
+        ctrl = MagicMock()
+        ctrl.connect = AsyncMock(side_effect=ConnectionError("GATT failed"))
+        with patch("bleak.BleakScanner.find_device_by_address", new=AsyncMock(return_value=object())), \
+                patch("ble_manager.CuktechBLEController", return_value=ctrl), \
+                patch("asyncio.sleep", new=AsyncMock()):
+            with pytest.raises(ConnectionError, match="GATT failed"):
+                await mgr._connect()
+        assert mgr.notice == ""
+        assert mgr._scan_fail_streak == 0
+
+    @pytest.mark.asyncio
+    async def test_request_stop_clears_notice(self):
+        mgr = make_manager()
+        mgr.notice = "ble_stuck_need_radio_reset"
+        mgr._scan_fail_streak = 5
+        await mgr.request_stop()
+        assert mgr.notice == ""
+        assert mgr._scan_fail_streak == 0
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("phase", ["probe", "reset"])
+    async def test_stop_during_recovery_cannot_restore_notice(self, phase):
+        mgr = make_manager()
+        mgr._probe_visible_ble_devices = AsyncMock(return_value=0)
+        mgr._reset_local_bluetooth = AsyncMock()
+
+        async def stop_during_operation():
+            await mgr.request_stop()
+            return 0
+
+        operation = mgr._probe_visible_ble_devices if phase == "probe" else mgr._reset_local_bluetooth
+        operation.side_effect = stop_during_operation
+        mgr._scan_fail_streak = mgr.BLE_STUCK_SCAN_FAILURES
+        await mgr._check_bluetooth_stuck()
+        assert mgr.notice == ""
+        if phase == "probe":
+            mgr._reset_local_bluetooth.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_other_devices_visible_is_not_stuck(self):
+        """能扫到其他 BLE 设备 → 只是充电器不在范围，不打扰用户。"""
+        mgr = make_manager()
+        mgr._probe_visible_ble_devices = AsyncMock(return_value=3)
+        mgr._reset_local_bluetooth = AsyncMock()
+        mgr._scan_fail_streak = mgr.BLE_STUCK_SCAN_FAILURES
+        await mgr._check_bluetooth_stuck()
+        mgr._reset_local_bluetooth.assert_not_awaited()
+        assert mgr.notice == ""
+        assert mgr._scan_fail_streak == 0
+
+    @pytest.mark.asyncio
+    async def test_no_device_visible_resets_and_notifies(self):
+        """一个设备都扫不到 → 自动复位蓝牙栈并发出提示事件。"""
+        mgr = make_manager()
+        mgr._probe_visible_ble_devices = AsyncMock(return_value=0)
+        mgr._reset_local_bluetooth = AsyncMock()
+        emitter = MagicMock()
+        mgr.set_sse_emitter(emitter)
+        mgr._scan_fail_streak = mgr.BLE_STUCK_SCAN_FAILURES
+        await mgr._check_bluetooth_stuck()
+        mgr._reset_local_bluetooth.assert_awaited_once()
+        assert mgr.notice == "ble_stuck_need_radio_reset"
+        event, payload = emitter.emit.call_args.args
+        assert event == "status"
+        assert payload["notice"] == "ble_stuck_need_radio_reset"
+        assert payload["connected"] is False
+
+    @pytest.mark.asyncio
+    async def test_probe_failure_is_silent(self):
+        """探测本身失败（如权限被撤销）时不上报异常。"""
+        mgr = make_manager()
+        mgr._probe_visible_ble_devices = AsyncMock(side_effect=RuntimeError("permission"))
+        mgr._reset_local_bluetooth = AsyncMock()
+        mgr._scan_fail_streak = mgr.BLE_STUCK_SCAN_FAILURES
+        await mgr._check_bluetooth_stuck()
+        mgr._reset_local_bluetooth.assert_not_awaited()
+        assert mgr.notice == ""
+
+    @pytest.mark.asyncio
+    async def test_probe_is_rate_limited(self):
+        """两次探测之间至少间隔 BLE_STUCK_PROBE_INTERVAL。"""
+        mgr = make_manager()
+        mgr._probe_visible_ble_devices = AsyncMock(return_value=0)
+        mgr._reset_local_bluetooth = AsyncMock()
+        mgr._scan_fail_streak = mgr.BLE_STUCK_SCAN_FAILURES
+        await mgr._check_bluetooth_stuck()
+        assert mgr._probe_visible_ble_devices.await_count == 1
+        mgr._scan_fail_streak = mgr.BLE_STUCK_SCAN_FAILURES
+        await mgr._check_bluetooth_stuck()
+        assert mgr._probe_visible_ble_devices.await_count == 1
+
+    @pytest.mark.asyncio
+    async def test_default_probe_unsupported_and_reset_disconnects(self):
+        """平台未覆写时的默认行为：不支持探测，复位退化为断开连接。"""
+        mgr = make_manager()
+        mgr._force_disconnect_bluetooth = AsyncMock()
+        assert await mgr._probe_visible_ble_devices() is None
+        await mgr._reset_local_bluetooth()
+        mgr._force_disconnect_bluetooth.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_recovery_clears_notice(self):
+        """自愈后重新连上 → 提示与计数一起清零。"""
+        mgr = make_manager()
+        mgr.BLE_STUCK_SCAN_FAILURES = 1
+        mgr._probe_visible_ble_devices = AsyncMock(return_value=0)
+        mgr._reset_local_bluetooth = AsyncMock()
+        mgr._force_disconnect_bluetooth = AsyncMock()
+        mgr._disconnect = AsyncMock()
+        emitter = MagicMock()
+        mgr.set_sse_emitter(emitter)
+        calls = 0
+
+        async def fake_connect_and_run():
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                raise ConnectionError("Charger not found")
+
+        mgr._connect_and_run = fake_connect_and_run
+        waits = 0
+
+        async def fake_wait_for(coro, timeout):
+            nonlocal waits
+            coro.close()
+            waits += 1
+            if waits >= 2:
+                mgr._stop_event.set()
+            raise asyncio.TimeoutError()
+
+        with patch("asyncio.wait_for", side_effect=fake_wait_for):
+            await mgr.start()
+
+        assert calls == 2
+        assert mgr.notice == ""
+        assert mgr._scan_fail_streak == 0
+        notices = [c.args[1].get("notice") for c in emitter.emit.call_args_list
+                   if c.args[0] == "status"]
+        assert "ble_stuck_need_radio_reset" in notices

@@ -758,6 +758,7 @@ class TestStaticCacheKeys:
         # 决不产生反斜杠 key（否则 request.path 精确匹配查不到）
         assert not any("\\" in k for k in keys)
 
+
     def test_cache_scan_subdir_files_present(self, tmp_path, monkeypatch):
         """_cache_static_files 全量扫描包含子目录文件，且 key 无反斜杠。"""
         import ha_server
@@ -784,3 +785,52 @@ class TestStaticCacheKeys:
         assert "/static/plugin_imgs/logo.png" in keys
         assert "/static/locales/zh-CN.js" in keys
         assert not any("\\" in k for k in keys)
+
+
+class TestRequestTimeout:
+    """Accelerate wall-clock deadlines while exercising the real middleware."""
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('path, expected_status', [('/api/events', 200), ('/api/status', 504)])
+    async def test_only_finite_api_requests_have_a_total_deadline(self, path, expected_status, monkeypatch):
+        from types import SimpleNamespace
+        from aiohttp import web
+        from ha_server import request_timeout_middleware
+
+        wait_for = asyncio.wait_for
+
+        async def accelerated_wait(awaitable, timeout):
+            return await wait_for(awaitable, 0.01 if timeout in (30.0, 120.0) else timeout)
+
+        async def handler(request):
+            await asyncio.sleep(0.05)
+            return web.Response(text='still connected')
+
+        monkeypatch.setattr(asyncio, 'wait_for', accelerated_wait)
+        response = await request_timeout_middleware(SimpleNamespace(path=path, method='GET'), handler)
+        assert response.status == expected_status
+
+    @pytest.mark.asyncio
+    async def test_idle_sse_reports_disconnect_without_waiting_for_next_port_push(self):
+        from types import SimpleNamespace
+        from aiohttp import web
+        from aiohttp.test_utils import TestClient, TestServer
+        from ha_server import Server, SSEEmitter, request_timeout_middleware
+        from state import ChargerState
+
+        server = Server.__new__(Server)
+        server.state = ChargerState()
+        server.ble = SimpleNamespace(notice='')
+        server.mqtt_client = None
+        server.sse = SSEEmitter()
+        app = web.Application(middlewares=[request_timeout_middleware])
+        app.router.add_get('/api/events', server.handle_sse)
+        async with TestClient(TestServer(app, shutdown_timeout=0.1)) as client:
+            async with client.get('/api/events') as response:
+                assert json.loads((await response.content.readline())[6:])['type'] == 'init'
+                await response.content.readline()  # SSE blank line
+                server.sse.emit('status', {'connected': False, 'authenticated': False})
+                line = await asyncio.wait_for(response.content.readline(), timeout=0.5)
+                assert json.loads(line[6:]) == {
+                    'type': 'status', 'connected': False, 'authenticated': False,
+                }

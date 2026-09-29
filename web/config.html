@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title data-i18n="pageTitle.config">CUKTECH 配置</title>
 <link rel="icon" href="/static/favicon.ico">
-<script src="/static/locales/zh-CN.js?v=7"></script>
-<script src="/static/locales/en.js?v=7"></script>
+<script src="/static/locales/zh-CN.js?v=12"></script>
+<script src="/static/locales/en.js?v=12"></script>
 <script src="/static/i18n.js?v=3"></script>
-<link rel="stylesheet" href="static/phone.css?v=6">
+<link rel="stylesheet" href="static/phone.css?v=13">
 <style>
 /* Config page overrides */
 .config-section { margin-top: 12px; }
@@ -17,6 +17,12 @@
     text-transform: uppercase; letter-spacing: 1px;
     margin-bottom: 8px; padding: 0 4px;
 }
+/* 可折叠分区：默认收起，点标题展开/收起；标题里的链接、开关不触发折叠 */
+.card.config-section .config-section-title { cursor: pointer; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; user-select: none; -webkit-user-select: none; }
+.card.config-section .config-section-title::after { content: '▾'; margin-left: auto; font-size: 12px; color: var(--text-dim); transition: transform .2s; }
+.card.config-section.collapsed .config-section-title::after { content: '▸'; }
+.card.config-section.collapsed > *:not(.config-section-title) { display: none; }
+.card.config-section.collapsed .config-section-title { margin-bottom: 0; }
 .config-row {
     display: flex; align-items: center; justify-content: space-between;
     padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -26,6 +32,22 @@ body.light .config-row { border-bottom-color: rgba(0,0,0,0.06); }
 .config-row:last-child { border-bottom: none; }
 .config-label { font-size: 15px; color: var(--text); }
 .config-hint { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+/* 「关于」区：只读值与外链 */
+.config-value { font-size: 13px; color: var(--text-dim); text-align: right; word-break: break-all; }
+.config-link { color: var(--accent); text-decoration: none; }
+.config-link:active { opacity: .7; }
+.about-card .config-label { white-space: nowrap; }
+.about-card .config-link { flex: 1 1 auto; margin-left: 12px; text-align: right; }
+.qr-hint {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    margin: 2px 0 6px; padding: 10px 12px; border-radius: 10px; cursor: pointer;
+    background: rgba(var(--accent-rgb), 0.10); border: 1px dashed var(--accent);
+    font-size: 12px; line-height: 1.35; color: var(--text-sub);
+}
+.qr-hint-btn {
+    flex-shrink: 0; padding: 5px 12px; border-radius: 8px; background: var(--accent);
+    color: #fff; font-size: 12px; font-weight: 600; white-space: nowrap;
+}
 .config-input {
     background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
     border-radius: 8px; padding: 8px 12px; color: var(--text); font-size: 14px;
@@ -77,6 +99,10 @@ body.light .config-input {
             <div class="config-section-title" style="display:flex;align-items:center;justify-content:space-between;">
                 <span data-i18n="config.bleDevice">BLE 设备</span>
                 <span onclick="openXiaomiModal()" style="font-size:10px;color:var(--accent);cursor:pointer;" data-i18n="config.xiaomiAuto">小米云自动获取 &#8599;</span>
+            </div>
+            <div class="qr-hint" onclick="openXiaomiModal()">
+                <span data-i18n="config.bleQRHint">点击「获取二维码」，用米家 App 扫码后自动填入设备信息</span>
+                <span class="qr-hint-btn" data-i18n="config.getQR">获取二维码</span>
             </div>
             <div class="config-row">
                 <div><div class="config-label" data-i18n="config.mac">MAC 地址</div><div class="config-hint" data-i18n="config.macHint">充电器蓝牙 MAC 地址</div></div>
@@ -197,6 +223,27 @@ body.light .config-input {
             </div>
         </div>
 
+        <!-- About: 版本号 + 项目地址 -->
+        <div class="card config-section about-card">
+            <div class="config-section-title" data-i18n="config.about">关于</div>
+            <div class="config-row">
+                <div class="config-label" data-i18n="config.version">版本</div>
+                <span class="config-value" id="aboutVersion">V1.1.1</span>
+            </div>
+            <div class="config-row">
+                <div class="config-label" data-i18n="config.githubRepo">项目地址</div>
+                <a class="config-value config-link" id="aboutGithub" data-i18n="config.githubLink"
+                   href="https://github.com/xiaoze171/cuktech-ble-server"
+                   target="_blank" rel="noopener noreferrer">github.com/xiaoze171/cuktech-ble-server &#8599;</a>
+            </div>
+            <div class="config-row">
+                <div class="config-label" data-i18n="config.githubUpstream">上游项目</div>
+                <a class="config-value config-link" id="aboutUpstream" data-i18n="config.githubUpstreamLink"
+                   href="https://github.com/kairui1108/cuktech-ble-server"
+                   target="_blank" rel="noopener noreferrer">github.com/kairui1108/cuktech-ble-server &#8599;</a>
+            </div>
+        </div>
+
         <!-- Save Button -->
         <div style="padding: 0 0 20px;">
             <button class="btn-save" id="btnSave" onclick="saveConfig()">
@@ -209,7 +256,7 @@ body.light .config-input {
 
 <script>
 const API = window.location.origin;
-let isDark = true;
+let isDark = false;   // 默认浅色（白色背景）
 // 配置页状态追踪：语言切换时（applyTranslations 会重放静态文案）用钩子恢复动态状态
 let _configStatus = 'loading';   // 'loading' | 'loaded' | 'error'
 let _configStatusMsg = '';
@@ -224,8 +271,9 @@ function toggleTheme() {
 }
 // Load saved theme
 (function() {
-    const saved = localStorage.getItem('cuktech-config-theme');
-    if (saved === 'light') { isDark = false; document.body.classList.add('light'); document.getElementById('themeBtn').textContent = '🌙'; }
+    isDark = localStorage.getItem('cuktech-config-theme') === 'dark';
+    document.body.classList.toggle('light', !isDark);
+    document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
 })();
 
 function showToast(msg, duration) {
@@ -435,6 +483,17 @@ async function setWebLanguage(lang) {
 
 loadConfig();
 initLogLevel();
+
+// ── 可折叠分区：默认收起，点标题展开/收起（标题里的链接、开关不触发） ──
+document.querySelectorAll('.card.config-section').forEach(card => {
+    const title = card.querySelector('.config-section-title');
+    if (!title) return;
+    card.classList.add('collapsed');
+    title.addEventListener('click', (e) => {
+        if (e.target.closest('a, button, input, label.toggle')) return;
+        card.classList.toggle('collapsed');
+    });
+});
 
 // ── Xiaomi Cloud Modal ──
 let _xiaomiServer = '', _xiaomiSessionId = '', _xiaomiQRActive = false;

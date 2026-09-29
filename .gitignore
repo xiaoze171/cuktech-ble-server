@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+src/cuktech_ble_server.egg-info/
+.codex/
+
+# 本机运行日志与扫描状态
+desktop_run.log*
+*.log.err
+.mimosa/
+port_history.db*
+
+# Android 构建产物（源码在 android/app/src，APK 发布件放仓库根目录）
+android/.gradle/
+android/build/
+android/app/build/
+android/dist/
+android/local.properties
+android/.idea/
+android/app/release/
+
+# IDE / 系统
+.idea/
+.vscode/
+Thumbs.db
+
+# 历史构建 APK：仅最新发布件入库，旧包只留本地磁盘
+Cuktech-*.apk
+Cuktech-*.apk.sha256
+!Cuktech-1.1.1-android.12.apk
+!Cuktech-1.1.1-android.12.apk.sha256
