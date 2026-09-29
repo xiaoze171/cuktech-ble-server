@@ -591,12 +591,12 @@ button:focus, button:focus-visible, select:focus, input:focus, a:focus,
 .dark-glow { display: none; }
 
 /* ── 卡片自定义排序（长按拖动） ── */
-.bottom-view .card[data-card] {
+.bottom-view .card {
     -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
 }
-.bottom-view .card[data-card] input,
-.bottom-view .card[data-card] select,
-.bottom-view .card[data-card] textarea { -webkit-user-select: text; user-select: text; }
+.bottom-view .card input,
+.bottom-view .card select,
+.bottom-view .card textarea { -webkit-user-select: text; user-select: text; }
 .card-dragging {
     position: relative; z-index: 60;
     box-shadow: 0 10px 28px rgba(0,0,0,0.28);

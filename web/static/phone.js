@@ -1167,6 +1167,8 @@ window.addEventListener('pageshow', () => initPhoneSSE());
 const CARD_ORDER_KEY = 'cuktech-phone-card-order';
 const CARD_HOLD_MS = 400;
 const CARD_MOVE_CANCEL_PX = 8;
+// 默认顺序；版本升级新增的卡片按它在默认顺序里的前驱插回，而不是掉到末尾
+const CARD_DEFAULT_ORDER = ['connect', 'total', 'chart', 'scene', 'history', 'portctl', 'screen', 'trickle', 'limit', 'delay'];
 
 function applyCardOrder(order) {
     const container = document.querySelector('.bottom-view');
@@ -1175,7 +1177,18 @@ function applyCardOrder(order) {
     for (const el of container.querySelectorAll('[data-card]')) cards[el.dataset.card] = el;
     const merged = [];
     for (const id of order) if (cards[id]) { merged.push(cards[id]); delete cards[id]; }
-    for (const key of Object.keys(cards)) merged.push(cards[key]); // 未来新增的卡追加到末尾
+    for (const key of Object.keys(cards)) {
+        const i = CARD_DEFAULT_ORDER.indexOf(key);
+        let at = merged.length;
+        if (i === 0) at = 0; // 默认第一张的新卡插最前
+        else if (i > 0) {
+            for (let j = i - 1; j >= 0; j--) {
+                const idx = merged.indexOf(cards[CARD_DEFAULT_ORDER[j]]);
+                if (idx >= 0) { at = idx + 1; break; }
+            }
+        }
+        merged.splice(at, 0, cards[key]);
+    }
     for (const el of merged) container.appendChild(el);
 }
 
