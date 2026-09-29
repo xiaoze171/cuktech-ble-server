@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title data-i18n="pageTitle.config">CUKTECH 配置</title>
 <link rel="icon" href="/static/favicon.ico">
-<script src="/static/locales/zh-CN.js?v=15"></script>
-<script src="/static/locales/en.js?v=15"></script>
+<script src="/static/locales/zh-CN.js?v=16"></script>
+<script src="/static/locales/en.js?v=16"></script>
 <script src="/static/i18n.js?v=3"></script>
 <script src="/static/update-check.js?v=2"></script>
 <link rel="stylesheet" href="static/phone.css?v=16">
@@ -28,6 +28,19 @@
 #updateLog .md-hr { border-top: 1px solid var(--card-border); margin: 8px 0; }
 #updateLog code { background: rgba(127,127,127,0.12); border-radius: 4px; padding: 1px 5px; font-size: 11px; }
 #updateLog a { color: var(--accent); }
+/* ── 更新下载进度条 ── */
+.update-progress {
+    height: 6px; border-radius: 3px; overflow: hidden;
+    background: rgba(127,127,127,0.18);
+}
+.update-progress-fill {
+    height: 100%; width: 0%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), #6ec1ff);
+    transition: width 0.4s ease;
+}
+.update-progress-text {
+    margin-top: 5px; font-size: 11px; color: var(--text-dim); text-align: center;
+}
 .card.config-section .config-section-title { cursor: pointer; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; user-select: none; -webkit-user-select: none; }
 .card.config-section .config-section-title::after { content: '▾'; margin-left: auto; font-size: 12px; color: var(--text-dim); transition: transform .2s; }
 .card.config-section.collapsed .config-section-title::after { content: '▸'; }
@@ -258,15 +271,16 @@ body.light .config-input {
             </div>
             <div class="config-row">
                 <div class="config-label" data-i18n="config.checkUpdate">检查更新</div>
-                <button class="sim-btn" id="checkUpdateBtn" onclick="checkForUpdate()"
-                        data-i18n="config.checkUpdateBtn"
-                        style="padding:8px 20px;border-radius:16px;font-size:12px;min-height:36px;">检查</button>
+                <button class="sim-btn" id="checkUpdateBtn" onclick="updateButtonClicked()"
+                        data-i18n="config.checkUpdate"
+                        style="padding:8px 20px;border-radius:16px;font-size:12px;min-height:36px;min-width:92px;">检查更新</button>
+            </div>
+            <div id="updateProgressWrap" style="display:none;padding:2px 4px 6px;">
+                <div class="update-progress"><div class="update-progress-fill" id="updateProgressFill"></div></div>
+                <div class="update-progress-text" id="updateProgressText"></div>
             </div>
             <div class="config-row" id="updateStatusRow" style="display:none;">
                 <div class="config-label" id="updateStatus" style="white-space:normal;"></div>
-                <button class="sim-btn" id="installUpdateBtn" onclick="downloadAndInstallUpdate()"
-                        style="display:none;padding:8px 20px;border-radius:16px;font-size:12px;min-height:36px;"
-                        data-i18n="config.downloadInstall">下载安装</button>
                 <a class="config-value config-link" id="updateDownload" style="display:none;"
                    href="https://github.com/xiaoze171/cuktech-ble-server/releases"
                    target="_blank" rel="noopener noreferrer" data-i18n="config.downloadUpdate">前往下载 &#8599;</a>
@@ -721,18 +735,34 @@ if (typeof I18N !== 'undefined' && typeof I18N.onChange === 'function') {
     }).catch(() => { /* 保持静态兜底 */ });
 })();
 
-// ── 更新检测（GitHub Releases）：按钮手动检查；进设置页先回显缓存结果并做节流静默检查 ──
+// ── 更新检测（GitHub Releases）：单按钮状态机 检查更新→下载安装→立即安装；进度条+进度文本 ──
 let _updateChecking = false;
 let _updateResult = null;
-let _updateInstalling = false;
+let _updatePhase = 'idle';   // idle | newer | downloading | downloaded
 function canInstallInApp() {
     return !!(window.AndroidSettings && typeof window.AndroidSettings.installUpdate === 'function');
+}
+function setUpdateButton(label, disabled) {
+    const btn = document.getElementById('checkUpdateBtn');
+    if (!btn) return;
+    btn.textContent = label;
+    btn.disabled = !!disabled;
+}
+function showUpdateProgress(show, pct) {
+    const wrap = document.getElementById('updateProgressWrap');
+    if (!wrap) return;
+    wrap.style.display = show ? '' : 'none';
+    if (show) {
+        const fill = document.getElementById('updateProgressFill');
+        const text = document.getElementById('updateProgressText');
+        if (fill) fill.style.width = Math.max(3, pct || 0) + '%';
+        if (text) text.textContent = I18N.t('config.progressText', { pct: (pct || 0) + '%' });
+    }
 }
 function renderUpdateResult(r) {
     const row = document.getElementById('updateStatusRow');
     const st = document.getElementById('updateStatus');
     const dl = document.getElementById('updateDownload');
-    const installBtn = document.getElementById('installUpdateBtn');
     const logWrap = document.getElementById('updateLogWrap');
     if (!row || !st) return;
     _updateResult = r || null;
@@ -740,69 +770,99 @@ function renderUpdateResult(r) {
     row.style.display = '';
     if (r.isNewer) {
         st.textContent = I18N.t('config.newVersionFound', { v: r.version || r.tag });
-        if (installBtn) installBtn.style.display = canInstallInApp() ? '' : 'none';
+        _updatePhase = 'newer';
+        setUpdateButton(canInstallInApp() ? I18N.t('config.downloadInstall') : I18N.t('config.checkUpdate'), false);
         if (dl) { dl.style.display = ''; dl.href = r.url || window.CuktechUpdateCheck.RELEASES_PAGE; }
     } else {
         st.textContent = I18N.t('config.upToDate');
-        if (installBtn) installBtn.style.display = 'none';
+        _updatePhase = 'idle';
+        setUpdateButton(I18N.t('config.checkUpdate'), false);
         if (dl) dl.style.display = 'none';
     }
     const log = document.getElementById('updateLog');
     if (log) log.innerHTML = window.CuktechUpdateCheck.renderNotes((r.body || '').trim() || (r.name || r.tag || ''));
     logWrap.style.display = '';
 }
-async function downloadAndInstallUpdate() {
-    if (_updateInstalling || !canInstallInApp() || !_updateResult || !_updateResult.apkUrl) return;
-    _updateInstalling = true;
-    const btn = document.getElementById('installUpdateBtn');
+function performInstall() {
     const st = document.getElementById('updateStatus');
-    btn.disabled = true;
+    const r2 = window.AndroidSettings.installUpdate();
+    if (r2 === 'permission') {
+        // 授权页返回后仍处 downloaded 状态：再点一次按钮直接安装，不重新下载
+        showToast(I18N.t('config.installPermNeeded'), 6000);
+        setUpdateButton(I18N.t('config.installNow'), false);
+    } else if (r2 === 'no_file') {
+        showToast(I18N.t('config.downloadFailed', { msg: 'no apk file' }), 5000);
+        _updatePhase = 'newer';
+        setUpdateButton(I18N.t('config.downloadInstall'), false);
+    } else if (typeof r2 === 'string' && r2.indexOf('error:') === 0) {
+        showToast(I18N.t('config.installFailed', { msg: r2.slice(6) }), 8000);
+        _updatePhase = 'downloaded';   // 包还在，可重试安装
+        setUpdateButton(I18N.t('config.installNow'), false);
+    } else {
+        showToast(I18N.t('config.installPrompt'), 5000);
+        setUpdateButton(I18N.t('config.installNow'), false);
+    }
+    if (st) st.textContent = I18N.t('config.installReady');
+}
+async function startDownloadFlow() {
+    const st = document.getElementById('updateStatus');
+    setUpdateButton(I18N.t('config.downloading', { pct: '' }), true);
+    _updatePhase = 'downloading';
     try {
         const started = window.AndroidSettings.downloadUpdate(_updateResult.apkUrl);
         if (started === 'blocked') throw new Error('url not allowed');
+        showUpdateProgress(true, 0);
         for (;;) {
-            await new Promise(r => setTimeout(r, 800));
+            await new Promise(r => setTimeout(r, 600));
             const s = JSON.parse(window.AndroidSettings.downloadStatus() || '{}');
             if (s.state === 'running') {
-                st.textContent = s.total > 0
-                    ? I18N.t('config.downloading', { pct: Math.round(s.received * 100 / s.total) })
-                    : I18N.t('config.downloading', { pct: '' });
+                showUpdateProgress(true, s.total > 0 ? Math.round(s.received * 100 / s.total) : 0);
                 continue;
             }
             if (s.state !== 'done') throw new Error(s.error || 'download failed');
-            st.textContent = I18N.t('config.installReady');
-            const r2 = window.AndroidSettings.installUpdate();
-            if (r2 === 'permission') showToast(I18N.t('config.installPermNeeded'), 6000);
-            else if (r2 === 'no_file') showToast(I18N.t('config.updateCheckFailed'), 4000);
-            else if (typeof r2 === 'string' && r2.indexOf('error:') === 0) {
-                showToast(I18N.t('config.installFailed', { msg: r2.slice(6) }), 6000);
-            } else {
-                showToast(I18N.t('config.installPrompt'), 5000);
-            }
             break;
         }
+        showUpdateProgress(false, 100);
+        _updatePhase = 'downloaded';
+        performInstall();
     } catch (e) {
-        st.textContent = I18N.t('config.updateCheckFailed');
+        showUpdateProgress(false, 0);
+        if (st) st.textContent = I18N.t('config.downloadFailed', { msg: e.message || e });
+        _updatePhase = 'newer';
+        setUpdateButton(I18N.t('config.downloadInstall'), false);
     }
-    btn.disabled = false;
-    _updateInstalling = false;
 }
-async function checkForUpdate() {
-    if (_updateChecking || !window.CuktechUpdateCheck) return;
+async function updateButtonClicked() {
+    if (_updateChecking) return;
+    // 已下载完成：直接拉起安装（含授权页返回后的重试，不重新下载）
+    if (_updatePhase === 'downloaded' && canInstallInApp()) {
+        _updateChecking = true;
+        setUpdateButton(I18N.t('config.installNow'), true);
+        performInstall();
+        _updateChecking = false;
+        return;
+    }
+    // 发现新版本且支持应用内安装：下载并安装
+    if (_updatePhase === 'newer' && canInstallInApp() && _updateResult && _updateResult.apkUrl) {
+        _updateChecking = true;
+        try { await startDownloadFlow(); } finally { _updateChecking = false; }
+        return;
+    }
+    // 否则：检查更新
+    if (!window.CuktechUpdateCheck) return;
     _updateChecking = true;
-    const btn = document.getElementById('checkUpdateBtn');
+    setUpdateButton(I18N.t('config.checkingUpdate'), true);
     const st = document.getElementById('updateStatus');
-    btn.disabled = true;
+    if (st) st.textContent = I18N.t('config.checkingUpdate');
     document.getElementById('updateStatusRow').style.display = '';
-    st.textContent = I18N.t('config.checkingUpdate');
     try {
         renderUpdateResult(await window.CuktechUpdateCheck.check({ force: true }));
     } catch (e) {
-        st.textContent = (e && e.code === 'NO_RELEASES')
+        if (st) st.textContent = (e && e.code === 'NO_RELEASES')
             ? I18N.t('config.noReleases')
             : I18N.t('config.updateCheckFailed');
+        setUpdateButton(I18N.t('config.checkUpdate'), false);
     }
-    btn.disabled = false;
     _updateChecking = false;
 }
 (function initUpdateArea() {

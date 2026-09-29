@@ -369,28 +369,40 @@ public final class MainActivity extends Activity {
             }
             Thread worker = new Thread(() -> {
                 java.io.File tmp = new java.io.File(getFilesDir(), "updates/update.apk.tmp");
-                try {
-                    javax.net.ssl.HttpsURLConnection conn = (javax.net.ssl.HttpsURLConnection) new java.net.URL(url).openConnection();
-                    conn.setInstanceFollowRedirects(true);
-                    conn.setConnectTimeout(15000);
-                    conn.setReadTimeout(30000);
-                    conn.setRequestProperty("User-Agent", "cuktech-ble-server");
-                    try (java.io.InputStream in = conn.getInputStream();
-                         java.io.OutputStream out = new java.io.FileOutputStream(tmp)) {
-                        updateTotal = conn.getContentLength();
-                        byte[] buffer = new byte[65536];
-                        int read;
-                        while ((read = in.read(buffer)) > 0) {
-                            out.write(buffer, 0, read);
-                            updateReceived += read;
+                Exception lastError = null;
+                // 慢网络下单次读取可能超时：最多尝试 3 次，支持断点续传
+                for (int attempt = 0; attempt < 3; attempt++) {
+                    try {
+                        javax.net.ssl.HttpsURLConnection conn = (javax.net.ssl.HttpsURLConnection) new java.net.URL(url).openConnection();
+                        conn.setInstanceFollowRedirects(true);
+                        conn.setConnectTimeout(20000);
+                        conn.setReadTimeout(60000);
+                        conn.setRequestProperty("User-Agent", "cuktech-ble-server");
+                        boolean resume = attempt > 0 && tmp.exists() && tmp.length() > 0;
+                        if (resume) conn.setRequestProperty("Range", "bytes=" + tmp.length() + "-");
+                        int code = conn.getResponseCode();
+                        boolean appending = resume && code == 206;
+                        try (java.io.InputStream in = conn.getInputStream();
+                             java.io.OutputStream out = new java.io.FileOutputStream(tmp, appending)) {
+                            updateTotal = conn.getContentLength() + (appending ? tmp.length() : 0);
+                            if (!appending) updateReceived = 0;
+                            byte[] buffer = new byte[65536];
+                            int read;
+                            while ((read = in.read(buffer)) > 0) {
+                                out.write(buffer, 0, read);
+                                updateReceived += read;
+                            }
                         }
+                        if (!tmp.renameTo(updateApk)) throw new java.io.IOException("rename failed");
+                        synchronized (updateLock) { updateState = "done"; }
+                        lastError = null;
+                        break;
+                    } catch (Exception error) {
+                        lastError = error;
+                        synchronized (updateLock) { updateState = "error"; updateError = String.valueOf(error.getMessage()); }
                     }
-                    if (!tmp.renameTo(updateApk)) throw new java.io.IOException("rename failed");
-                    synchronized (updateLock) { updateState = "done"; }
-                } catch (Exception error) {
-                    tmp.delete();
-                    synchronized (updateLock) { updateState = "error"; updateError = String.valueOf(error.getMessage()); }
                 }
+                if (lastError != null) tmp.delete();
             }, "update-download");
             worker.start();
             return "running";

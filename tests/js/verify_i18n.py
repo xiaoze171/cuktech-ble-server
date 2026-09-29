@@ -10,6 +10,7 @@
    visible is left untranslated.
 """
 import json
+import os
 import re
 import subprocess
 import sys
@@ -20,6 +21,12 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 WEB = ROOT / "web"
 LOCALE_DIR = WEB / "static" / "locales"
 NODE = "/vol1/@appcenter/nodejs_v22/bin/node"
+if not Path(NODE).exists():
+    # 开发机（Windows）本地 node：nvm 管理的 node.exe
+    for cand in (r"D:\config\nvmTools\nodejs\node.exe", "node"):
+        if Path(cand).exists():
+            NODE = cand
+            break
 
 CJK = re.compile(r"[\u4e00-\u9fff]")
 # keys from t() calls: I18N.t('a.b') / t('a.b'), but not word-embedded "t("
@@ -38,8 +45,9 @@ EXCLUDE_FILES = {"chart.umd.min.js", "zh-CN.js", "en.js", "i18n.js"}
 KNOWN_CJK_LINES = re.compile(r"data\.error\.includes\('等待扫码'\)|label: '中文'|value=\"zh-CN\">中文")
 
 # Keys that are bound at runtime via config tables / string concatenation and
-# therefore do not appear as literal t('...') calls (settings.*, scene.desc*).
-DYNAMIC_KEY_PREFIXES = ("settings.", "scene.desc")
+# therefore do not appear as literal t('...') calls (settings.*, scene.desc*,
+# phone.cardConnect via CARD_TITLE_KEYS table in phone.js).
+DYNAMIC_KEY_PREFIXES = ("settings.", "scene.desc", "phone.cardConnect")
 
 
 def node_locale_keys():
@@ -63,7 +71,7 @@ process.stdout.write(JSON.stringify({zhKeys:Object.keys(flatten(zh)),enKeys:Obje
 """
     r = subprocess.run(
         [NODE, "-e", script],
-        env={**__import__("os").environ, "LOCALE_DIR": str(LOCALE_DIR)},
+        env={**os.environ, "LOCALE_DIR": str(LOCALE_DIR)},
         capture_output=True, text=True, check=True,
     )
     return json.loads(r.stdout)
