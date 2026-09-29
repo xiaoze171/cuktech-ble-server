@@ -1165,6 +1165,7 @@ window.addEventListener('pageshow', () => initPhoneSSE());
 // ── 卡片自定义排序：长按卡片 0.4s 进入拖动，上下拖到目标位，松手保存 ──
 // 顺序存 localStorage；恢复时移动 DOM 节点（事件监听随之迁移，零破坏）。
 const CARD_ORDER_KEY = 'cuktech-phone-card-order';
+const CARD_SORT_HINT_KEY = 'cuktech-phone-sort-hint-shown';
 const CARD_HOLD_MS = 400;
 const CARD_MOVE_CANCEL_PX = 8;
 // 默认顺序；版本升级新增的卡片按它在默认顺序里的前驱插回，而不是掉到末尾
@@ -1195,11 +1196,14 @@ function applyCardOrder(order) {
 (function initCardSort() {
     const container = document.querySelector('.bottom-view');
     if (!container) return;
-    // 恢复已保存顺序
+    // 恢复已保存顺序；从没排过序时只提示一次（避免每次打开都弹）
     try {
         const saved = JSON.parse(localStorage.getItem(CARD_ORDER_KEY) || '[]');
         if (Array.isArray(saved) && saved.length) applyCardOrder(saved);
-        else setTimeout(() => toast(I18N.t('phone.sortHint')), 1500); // 首次使用提示
+        else if (!localStorage.getItem(CARD_SORT_HINT_KEY)) {
+            localStorage.setItem(CARD_SORT_HINT_KEY, '1');
+            setTimeout(() => toast(I18N.t('phone.sortHint')), 1500);
+        }
     } catch (e) { /* 存储损坏按默认顺序 */ }
 
     // 拖到交互控件上不触发（按钮/开关/下拉/链接/限额卡组自身手势等）
@@ -1367,3 +1371,19 @@ if (typeof I18N !== 'undefined' && typeof I18N.onChange === 'function') {
         renderAll();
     });
 }
+
+// ── 启动静默检查更新：API 1 小时节流在 update-check 内部；发现新版每个版本只 toast 一次 ──
+(function initUpdateNotice() {
+    if (!window.CuktechUpdateCheck) return;
+    setTimeout(() => {
+        window.CuktechUpdateCheck.check().then((r) => {
+            if (!r || !r.isNewer) return;
+            let lastNotified = '';
+            try { lastNotified = JSON.parse(localStorage.getItem('cuktech-update-toast-tag') || '""'); } catch (e) { /* 忽略 */ }
+            if (lastNotified === (r.version || r.tag)) return;
+            localStorage.setItem('cuktech-update-toast-tag', JSON.stringify(r.version || r.tag));
+            const tpl = I18N.t('phone.updateAvailable') || '';
+            toast(tpl.replace('{{v}}', r.version || r.tag));
+        }).catch(() => { /* 静默失败 */ });
+    }, 3000);
+})();

@@ -66,7 +66,7 @@
   },
   "web/config.html": {
     "source": "web/config.html",
-    "sha256": "30c027c61cf076ede5839d96c1ac94d62315d7dfe1273104d3dd9a6dc61962d3",
+    "sha256": "7ea2c4e321ec0dbd46a9f9c67702eff5ca9f78d2bba18578562de8ce05e68c95",
     "overlay": true
   },
   "web/index.html": {
@@ -76,7 +76,7 @@
   },
   "web/phone.html": {
     "source": "web/phone.html",
-    "sha256": "734b9523129d454f6ae7722f942374c9e486c5f6cf03b4089e9de9dd835ae6a3",
+    "sha256": "fbea4b3fa65b647d19a0861fddd69153a0530e0833fdb3b6a69009c6a7eb41d4",
     "overlay": false
   },
   "web/static/app.js": {
@@ -141,12 +141,12 @@
   },
   "web/static/locales/en.js": {
     "source": "web/static/locales/en.js",
-    "sha256": "eca2d48e1f2eb83ab6233a3dd856a72b8162a948eea94ae30616f59287d890c2",
+    "sha256": "98d48e4c7f0b99a3eb44d8231b349cd4d166ab1a34bc19ff1380abda69352916",
     "overlay": true
   },
   "web/static/locales/zh-CN.js": {
     "source": "web/static/locales/zh-CN.js",
-    "sha256": "cd64eff2dbefdfc08ec0a19593dfd466c3d490cc18571c1928a63f514bd2abfe",
+    "sha256": "8c2ae1feceda401f7b268625fd77e791801875b488886dd744bd41de4e1438de",
     "overlay": true
   },
   "web/static/logo_footer.png": {
@@ -156,12 +156,12 @@
   },
   "web/static/phone.css": {
     "source": "web/static/phone.css",
-    "sha256": "4099a6d72c8972ab44daed7909fb73d00f1e85a03d4ee9bdb1bec7432f26714c",
+    "sha256": "81e1127cf205453c54a9f25996a48a4cc1d808db58f28fdfe0adbdaa18018bd9",
     "overlay": false
   },
   "web/static/phone.js": {
     "source": "web/static/phone.js",
-    "sha256": "16e0f5767e42d3a3116950b4a2214ac1c94e8ec1f0bb275c9244bc5c5b7553c4",
+    "sha256": "7ab6a456069b73ce60396580c60f07340d3dbe6161f1f1fbd54913a1c96b5c97",
     "overlay": false
   },
   "web/static/plugin_imgs/main_card_ad1204u_unconnected.png": {
@@ -352,6 +352,11 @@
   "web/static/power_chart.html": {
     "source": "web/static/power_chart.html",
     "sha256": "ebd99eb783da2b7e28291d0f2c84444de3d25c6b09998c247a99199292dbe06b",
+    "overlay": false
+  },
+  "web/static/update-check.js": {
+    "source": "web/static/update-check.js",
+    "sha256": "c3e06eb41e5f015280adecb788aa82abca635393de9e1a43291c08ea1915a48b",
     "overlay": false
   },
   "xiaomi_cloud.py": {

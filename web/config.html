@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title data-i18n="pageTitle.config">CUKTECH 配置</title>
 <link rel="icon" href="/static/favicon.ico">
-<script src="/static/locales/zh-CN.js?v=12"></script>
-<script src="/static/locales/en.js?v=12"></script>
+<script src="/static/locales/zh-CN.js?v=13"></script>
+<script src="/static/locales/en.js?v=13"></script>
 <script src="/static/i18n.js?v=3"></script>
-<link rel="stylesheet" href="static/phone.css?v=13">
+<script src="/static/update-check.js?v=1"></script>
+<link rel="stylesheet" href="static/phone.css?v=16">
 <style>
 /* Config page overrides */
 .config-section { margin-top: 12px; }
@@ -241,6 +242,23 @@ body.light .config-input {
                 <a class="config-value config-link" id="aboutUpstream" data-i18n="config.githubUpstreamLink"
                    href="https://github.com/kairui1108/cuktech-ble-server"
                    target="_blank" rel="noopener noreferrer">github.com/kairui1108/cuktech-ble-server &#8599;</a>
+            </div>
+            <div class="config-row">
+                <div class="config-label" data-i18n="config.checkUpdate">检查更新</div>
+                <button class="sim-btn" id="checkUpdateBtn" onclick="checkForUpdate()"
+                        data-i18n="config.checkUpdateBtn"
+                        style="padding:8px 20px;border-radius:16px;font-size:12px;min-height:36px;">检查</button>
+            </div>
+            <div class="config-row" id="updateStatusRow" style="display:none;">
+                <div class="config-label" id="updateStatus" style="white-space:normal;"></div>
+                <a class="config-value config-link" id="updateDownload" style="display:none;"
+                   href="https://github.com/xiaoze171/cuktech-ble-server/releases"
+                   target="_blank" rel="noopener noreferrer" data-i18n="config.downloadUpdate">前往下载 &#8599;</a>
+            </div>
+            <div id="updateLogWrap" style="display:none;padding:8px 4px 0;">
+                <div class="config-label" data-i18n="config.updateLog" style="margin-bottom:4px;">更新日志</div>
+                <div id="updateLog"
+                     style="font-size:12px;color:var(--text-dim);white-space:pre-wrap;word-break:break-word;max-height:220px;overflow-y:auto;line-height:1.5;"></div>
             </div>
         </div>
 
@@ -664,6 +682,54 @@ if (typeof I18N !== 'undefined' && typeof I18N.onChange === 'function') {
         if (btnT) btnT.textContent = _saving ? I18N.t('common.saving') : I18N.t('config.saveRestart');
     });
 }
+
+// ── 更新检测（GitHub Releases）：按钮手动检查；进设置页先回显缓存结果并做节流静默检查 ──
+let _updateChecking = false;
+function renderUpdateResult(r) {
+    const row = document.getElementById('updateStatusRow');
+    const st = document.getElementById('updateStatus');
+    const dl = document.getElementById('updateDownload');
+    const logWrap = document.getElementById('updateLogWrap');
+    if (!row || !st) return;
+    if (!r) { row.style.display = 'none'; logWrap.style.display = 'none'; return; }
+    row.style.display = '';
+    if (r.isNewer) {
+        st.textContent = I18N.t('config.newVersionFound', { v: r.version || r.tag });
+        if (dl) { dl.style.display = ''; dl.href = r.url || window.CuktechUpdateCheck.RELEASES_PAGE; }
+    } else {
+        st.textContent = I18N.t('config.upToDate');
+        if (dl) dl.style.display = 'none';
+    }
+    const log = document.getElementById('updateLog');
+    if (log) log.textContent = ((r.body || '').trim() || r.name || r.tag || '');
+    logWrap.style.display = '';
+}
+async function checkForUpdate() {
+    if (_updateChecking || !window.CuktechUpdateCheck) return;
+    _updateChecking = true;
+    const btn = document.getElementById('checkUpdateBtn');
+    const st = document.getElementById('updateStatus');
+    btn.disabled = true;
+    document.getElementById('updateStatusRow').style.display = '';
+    st.textContent = I18N.t('config.checkingUpdate');
+    try {
+        renderUpdateResult(await window.CuktechUpdateCheck.check({ force: true }));
+    } catch (e) {
+        st.textContent = (e && e.code === 'NO_RELEASES')
+            ? I18N.t('config.noReleases')
+            : I18N.t('config.updateCheckFailed');
+    }
+    btn.disabled = false;
+    _updateChecking = false;
+}
+(function initUpdateArea() {
+    if (!window.CuktechUpdateCheck) return;
+    const cached = window.CuktechUpdateCheck.cached();
+    if (cached) renderUpdateResult(cached);
+    window.CuktechUpdateCheck.check()
+        .then((r) => { if (r) renderUpdateResult(r); })
+        .catch(() => { /* 静默失败，保留缓存回显 */ });
+})();
 </script>
 
 <!-- Xiaomi Cloud Login Modal -->
