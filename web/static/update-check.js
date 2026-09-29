@@ -103,13 +103,29 @@
         try { return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); } catch (e) { return null; }
     }
 
+    // 缓存仍对应当前安装版本才可用：应用升级/降级后旧结果作废，
+    // 否则会按旧缓存提示「发现新版本」，下载的却是已安装的同版本包。
+    async function freshCached() {
+        const c = cached();
+        if (!c) return null;
+        const cur = await currentVersion();
+        if (cur && c.current && cur !== c.current) return null;
+        return c;
+    }
+
+    // 结果相对当前安装版本是否仍是新版本（下载/安装前复核，挡住陈旧状态触发的下载）
+    async function stillNewer(result) {
+        if (!result || !result.version) return false;
+        return compareVersions(result.version, await currentVersion()) > 0;
+    }
+
     // force=true 跳过节流（设置页手动检查）；否则 1 小时内直接返回缓存
     async function check(opts) {
         const force = opts && opts.force;
         if (!force) {
             const last = Number(localStorage.getItem(CHECKED_AT_KEY) || 0);
             if (Date.now() - last < THROTTLE_MS) {
-                const c = cached();
+                const c = await freshCached();
                 if (c) return c;
             }
         }
@@ -123,5 +139,7 @@
         return result;
     }
 
-    window.CuktechUpdateCheck = { check, cached, compareVersions, parseVersion, renderNotes, RELEASES_PAGE };
+    window.CuktechUpdateCheck = {
+        check, cached, freshCached, stillNewer, compareVersions, parseVersion, renderNotes, RELEASES_PAGE,
+    };
 })();

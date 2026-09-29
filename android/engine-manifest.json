@@ -66,7 +66,7 @@
   },
   "web/config.html": {
     "source": "web/config.html",
-    "sha256": "a103f7a4166b58879750f8d82dd5150cf97fed2bebdff47d2cf1aafa63654c0e",
+    "sha256": "7be95f67d477f09699c49d69be3f85e8378d3b2a46d0f5c582f553920c13a9e3",
     "overlay": true
   },
   "web/index.html": {
@@ -76,7 +76,7 @@
   },
   "web/phone.html": {
     "source": "web/phone.html",
-    "sha256": "cb308251e2d48d5024cd696f7ec23c38ffcb92c871946337d84403bb7693f7df",
+    "sha256": "e4d18bab87a68c93de6cea275395ea862ef775bff1d62f05269f97779227c935",
     "overlay": false
   },
   "web/static/app.js": {
@@ -356,7 +356,7 @@
   },
   "web/static/update-check.js": {
     "source": "web/static/update-check.js",
-    "sha256": "f6740894bbf338cdd31c18aac69985ae682f0b158508df87cdd0776a855adfb2",
+    "sha256": "b14fb9c543e505d157e93c93cf47dcc35902056e8e74dc8a6746cfe4afdee32a",
     "overlay": false
   },
   "xiaomi_cloud.py": {
