@@ -1267,7 +1267,13 @@ function openCardSortOverlay() {
 }
 
 function closeCardSortOverlay() {
-    if (cardSortOverlay) cardSortOverlay.classList.remove('open');
+    if (!cardSortOverlay) return;
+    cardSortOverlay.classList.remove('open');
+    // 清掉任何残留的拖动中间态（pointer 事件被系统打断时的兜底）
+    for (const r of cardSortOverlay.querySelectorAll('.card-sort-row')) {
+        r.classList.remove('dragging');
+        r.style.transform = '';
+    }
 }
 
 function commitRowOrder(rowsEl) {
@@ -1287,6 +1293,8 @@ function attachRowDrag(rowsEl) {
         const row = e.target.closest ? e.target.closest('.card-sort-row') : null;
         if (!row || !rowsEl.contains(row)) return;
         drag = { el: row, startX: e.clientX, startY: e.clientY, pid: e.pointerId, active: false };
+        // 捕获到容器上：后续事件必达 rowsEl，不依赖行本身收尾（部分 WebView 会丢 pointerup）
+        try { rowsEl.setPointerCapture(e.pointerId); } catch (err) { /* 指针已失效 */ }
     });
     rowsEl.addEventListener('pointermove', (e) => {
         if (!drag || e.pointerId !== drag.pid) return;
@@ -1294,7 +1302,6 @@ function attachRowDrag(rowsEl) {
             if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < SLOTPX) return;
             drag.active = true;
             drag.el.classList.add('dragging');
-            try { drag.el.setPointerCapture(drag.pid); } catch (err) { /* 指针已失效 */ }
         }
         drag.el.style.transform = `translateY(${e.clientY - drag.startY}px)`;
         const rect = drag.el.getBoundingClientRect();
@@ -1333,6 +1340,9 @@ function attachRowDrag(rowsEl) {
     };
     rowsEl.addEventListener('pointerup', end);
     rowsEl.addEventListener('pointercancel', end);
+    // 兜底：事件在容器外收尾（捕获失败/被系统打断）也不会卡住拖动样式
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
 }
 
 (function initCardSort() {

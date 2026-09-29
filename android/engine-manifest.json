@@ -76,7 +76,7 @@
   },
   "web/phone.html": {
     "source": "web/phone.html",
-    "sha256": "fcccd0bfa4f9cc8e67c2ab21e6eea7fd725f463039946a02b9427be0c1b578e6",
+    "sha256": "0862bc43630085fdc6891ca1eaaabb21e33643b7e0760d3f46f581536e8e26db",
     "overlay": false
   },
   "web/static/app.js": {
@@ -161,7 +161,7 @@
   },
   "web/static/phone.js": {
     "source": "web/static/phone.js",
-    "sha256": "a57ce50223d2e78a4ef1fa2bed2992d484e234c0b70cb8926c36a52fa244eff2",
+    "sha256": "6a8200813766a4e38aef81cd9b5c2081cdb527c5d2b5579ecefd6f98f620abdc",
     "overlay": false
   },
   "web/static/plugin_imgs/main_card_ad1204u_unconnected.png": {
