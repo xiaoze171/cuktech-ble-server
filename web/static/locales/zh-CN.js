@@ -222,6 +222,7 @@
             currentPower: '当前功率',
             powerChart: '功率曲线',
             rangeLive: '5分钟',
+            sortHint: '长按卡片可调整顺序',
             powerDist: '功率占比',
             chargeHistory: '充电记录',
             delayOff: '延时关闭',

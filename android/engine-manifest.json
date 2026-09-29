@@ -76,7 +76,7 @@
   },
   "web/phone.html": {
     "source": "web/phone.html",
-    "sha256": "add970c7437170fd221e751bff822f2c40db7a20eeb67c58ae3e4032f6ea6da8",
+    "sha256": "734b9523129d454f6ae7722f942374c9e486c5f6cf03b4089e9de9dd835ae6a3",
     "overlay": false
   },
   "web/static/app.js": {
@@ -141,12 +141,12 @@
   },
   "web/static/locales/en.js": {
     "source": "web/static/locales/en.js",
-    "sha256": "3f13fda06910a9cb70c6e2c046fed0ecae200a3733474bfd2d44236581bfd857",
+    "sha256": "eca2d48e1f2eb83ab6233a3dd856a72b8162a948eea94ae30616f59287d890c2",
     "overlay": true
   },
   "web/static/locales/zh-CN.js": {
     "source": "web/static/locales/zh-CN.js",
-    "sha256": "037e116aa8394abcc8686c34cee026b3fe371114ed1b0fc0d6a3079f2b4f0615",
+    "sha256": "cd64eff2dbefdfc08ec0a19593dfd466c3d490cc18571c1928a63f514bd2abfe",
     "overlay": true
   },
   "web/static/logo_footer.png": {
@@ -156,12 +156,12 @@
   },
   "web/static/phone.css": {
     "source": "web/static/phone.css",
-    "sha256": "babcae72fbf5db98e4eb3d279ea3fe3c0fefec2fa6013582be7cf46005b48474",
+    "sha256": "4099a6d72c8972ab44daed7909fb73d00f1e85a03d4ee9bdb1bec7432f26714c",
     "overlay": false
   },
   "web/static/phone.js": {
     "source": "web/static/phone.js",
-    "sha256": "479a9001b1ec5319f49aced88b9b0aaea5b9111dea48eb763fc9368a2dee38a8",
+    "sha256": "16e0f5767e42d3a3116950b4a2214ac1c94e8ec1f0bb275c9244bc5c5b7553c4",
     "overlay": false
   },
   "web/static/plugin_imgs/main_card_ad1204u_unconnected.png": {

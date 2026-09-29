@@ -222,6 +222,7 @@
             currentPower: 'Current Power',
             powerChart: 'Power Chart',
             rangeLive: '5 min',
+            sortHint: 'Long-press a card to reorder',
             powerDist: 'Power Distribution',
             chargeHistory: 'Charge History',
             delayOff: 'Delay Off',
