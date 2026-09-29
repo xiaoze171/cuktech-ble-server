@@ -347,6 +347,100 @@ public final class MainActivity extends Activity {
                 }
             });
         }
+
+        // ── 应用内更新：WebView 下载 release 资产 → PackageInstaller 拉起系统安装 ──
+        private final Object updateLock = new Object();
+        private String updateState = "idle";   // idle | running | done | error
+        private long updateReceived = 0, updateTotal = 0;
+        private String updateError = "";
+        private java.io.File updateApk = null;
+
+        /** 后台下载更新包。仅允许本仓库 release 资产与其 CDN 跳转地址。 */
+        @JavascriptInterface public String downloadUpdate(final String url) {
+            boolean allowed = url != null && (url.startsWith(
+                    "https://github.com/xiaoze171/cuktech-ble-server/releases/download/")
+                || url.startsWith("https://objects.githubusercontent.com/"));
+            if (!allowed) return "blocked";
+            synchronized (updateLock) {
+                if ("running".equals(updateState)) return "running";
+                updateState = "running"; updateReceived = 0; updateTotal = 0; updateError = "";
+                new java.io.File(getFilesDir(), "updates").mkdirs();
+                updateApk = new java.io.File(getFilesDir(), "updates/update.apk");
+            }
+            Thread worker = new Thread(() -> {
+                java.io.File tmp = new java.io.File(getFilesDir(), "updates/update.apk.tmp");
+                try {
+                    javax.net.ssl.HttpsURLConnection conn = (javax.net.ssl.HttpsURLConnection) new java.net.URL(url).openConnection();
+                    conn.setInstanceFollowRedirects(true);
+                    conn.setConnectTimeout(15000);
+                    conn.setReadTimeout(30000);
+                    conn.setRequestProperty("User-Agent", "cuktech-ble-server");
+                    try (java.io.InputStream in = conn.getInputStream();
+                         java.io.OutputStream out = new java.io.FileOutputStream(tmp)) {
+                        updateTotal = conn.getContentLength();
+                        byte[] buffer = new byte[65536];
+                        int read;
+                        while ((read = in.read(buffer)) > 0) {
+                            out.write(buffer, 0, read);
+                            updateReceived += read;
+                        }
+                    }
+                    if (!tmp.renameTo(updateApk)) throw new java.io.IOException("rename failed");
+                    synchronized (updateLock) { updateState = "done"; }
+                } catch (Exception error) {
+                    tmp.delete();
+                    synchronized (updateLock) { updateState = "error"; updateError = String.valueOf(error.getMessage()); }
+                }
+            }, "update-download");
+            worker.start();
+            return "running";
+        }
+
+        /** 下载进度 JSON（WebView 每秒轮询）。 */
+        @JavascriptInterface public String downloadStatus() {
+            synchronized (updateLock) {
+                return "{\"state\":\"" + updateState + "\",\"received\":" + updateReceived
+                    + ",\"total\":" + updateTotal + ",\"error\":\""
+                    + (updateError == null ? "" : updateError.replace("\"", "'")) + "\"}";
+            }
+        }
+
+        /** 下载完成后触发系统安装确认；返回 ok/permission/no_file/error:... */
+        @JavascriptInterface public String installUpdate() {
+            try {
+                if (Build.VERSION.SDK_INT >= 26 && !getPackageManager().canRequestPackageInstalls()) {
+                    Intent perm = new Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                        android.net.Uri.parse("package:" + getPackageName()));
+                    perm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(perm);
+                    return "permission";
+                }
+                java.io.File apk = updateApk != null ? updateApk : new java.io.File(getFilesDir(), "updates/update.apk");
+                if (!apk.exists() || apk.length() == 0) return "no_file";
+                android.content.pm.PackageInstaller installer = getPackageManager().getPackageInstaller();
+                android.content.pm.PackageInstaller.SessionParams params =
+                    new android.content.pm.PackageInstaller.SessionParams(
+                        android.content.pm.PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+                int sessionId = installer.createSession(params);
+                android.content.pm.PackageInstaller.Session session = installer.openSession(sessionId);
+                try (java.io.InputStream in = new java.io.FileInputStream(apk);
+                     java.io.OutputStream out = session.openWrite("update.apk", 0, apk.length())) {
+                    byte[] buffer = new byte[65536];
+                    int read;
+                    while ((read = in.read(buffer)) > 0) out.write(buffer, 0, read);
+                    session.fsync(out);
+                }
+                int piFlags = android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+                if (Build.VERSION.SDK_INT >= 31) piFlags |= android.app.PendingIntent.FLAG_MUTABLE;
+                Intent done = new Intent(InstallStatusReceiver.ACTION).setPackage(getPackageName());
+                android.app.PendingIntent pending = android.app.PendingIntent.getBroadcast(MainActivity.this, 0, done, piFlags);
+                session.commit(pending.getIntentSender());
+                session.close();
+                return "ok";
+            } catch (Exception error) {
+                return "error:" + error.getMessage();
+            }
+        }
     }
 
     private boolean locationEnabled() {

@@ -63,6 +63,8 @@
         const version = (parseVersion(rel.tag_name) && rel.tag_name)
             || (parseVersion(rel.name) && rel.name)
             || '';
+        const apkAsset = (Array.isArray(rel.assets) ? rel.assets : [])
+            .find(a => /\.apk$/i.test(a.name || '')) || null;
         return {
             tag: rel.tag_name || '',
             name: rel.name || '',
@@ -70,7 +72,31 @@
             body: rel.body || '',
             url: rel.html_url || RELEASES_PAGE,
             publishedAt: rel.published_at || '',
+            apkUrl: apkAsset ? (apkAsset.browser_download_url || '') : '',
         };
+    }
+
+    // 受限 Markdown → 安全 HTML（先整体转义防注入，只放行标题/加粗/行内代码/链接/列表/分隔线）
+    function renderNotes(text) {
+        const esc = String(text || '')
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        const inline = s => s
+            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+            .replace(/(^|[\s(])((?:https?:\/\/)[^\s<)]+)/g, '$1<a href="$2" target="_blank" rel="noopener noreferrer">$2</a>');
+        const out = [];
+        for (const raw of esc.split(/\r?\n/)) {
+            const line = raw.trim();
+            if (!line) continue;
+            const head = line.match(/^#{1,4}\s+(.*)$/);
+            if (head) { out.push('<div class="md-h">' + inline(head[1]) + '</div>'); continue; }
+            const li = line.match(/^[-*]\s+(.*)$/);
+            if (li) { out.push('<div class="md-li">' + inline(li[1]) + '</div>'); continue; }
+            if (/^(-{3,}|\*{3,})$/.test(line)) { out.push('<div class="md-hr"></div>'); continue; }
+            out.push('<div class="md-p">' + inline(line) + '</div>');
+        }
+        return out.join('');
     }
 
     function cached() {
@@ -97,5 +123,5 @@
         return result;
     }
 
-    window.CuktechUpdateCheck = { check, cached, compareVersions, parseVersion, RELEASES_PAGE };
+    window.CuktechUpdateCheck = { check, cached, compareVersions, parseVersion, renderNotes, RELEASES_PAGE };
 })();

@@ -26,4 +26,5 @@
     <string name="no_document_picker">未找到文件保存程序。</string>
     <string name="export_saved">CSV 已保存。</string>
     <string name="export_failed">CSV 保存失败，请重新导出。</string>
+    <string name="install_update_failed">更新安装失败</string>
 </resources>

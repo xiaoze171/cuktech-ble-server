@@ -26,7 +26,7 @@
   },
   "ha_server.py": {
     "source": "ha_server.py",
-    "sha256": "84dc35f3e005e88b390dbcf67e436c79015b620eae2b7c1296326a583cc45ccd",
+    "sha256": "32523a7612b40992e80a95ec2001f90e4902527b4a882ae07b9a8797fd9844ae",
     "overlay": false
   },
   "history.py": {
@@ -76,7 +76,7 @@
   },
   "web/phone.html": {
     "source": "web/phone.html",
-    "sha256": "0862bc43630085fdc6891ca1eaaabb21e33643b7e0760d3f46f581536e8e26db",
+    "sha256": "cba272c31f98f344edfe0261dcf9d41370d4d21949f2e27d3d6ebd333bb4a709",
     "overlay": false
   },
   "web/static/app.js": {
@@ -141,12 +141,12 @@
   },
   "web/static/locales/en.js": {
     "source": "web/static/locales/en.js",
-    "sha256": "729309b3517e6615a2c678ade0ec11e5fe96cbc1acdca04c4cf5a45214f4453f",
+    "sha256": "98175f077591371a1666dfa15f07a6e0c770d032b53444eae77718fb81200f6f",
     "overlay": true
   },
   "web/static/locales/zh-CN.js": {
     "source": "web/static/locales/zh-CN.js",
-    "sha256": "6a2b139979184757f82546d7fb3f52ecc07b44dcf317ed712883ca1239698410",
+    "sha256": "45097c98c3dce43ba473c1c63ac9e7b8d5845c5f86edc894ac81dec1e87641b9",
     "overlay": true
   },
   "web/static/logo_footer.png": {
@@ -356,7 +356,7 @@
   },
   "web/static/update-check.js": {
     "source": "web/static/update-check.js",
-    "sha256": "c3e06eb41e5f015280adecb788aa82abca635393de9e1a43291c08ea1915a48b",
+    "sha256": "f6740894bbf338cdd31c18aac69985ae682f0b158508df87cdd0776a855adfb2",
     "overlay": false
   },
   "xiaomi_cloud.py": {
