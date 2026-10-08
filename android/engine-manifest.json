@@ -1,12 +1,12 @@
 {
   "bemfa_client.py": {
     "source": "bemfa_client.py",
-    "sha256": "736bbded23c292076b24dd6113cb0fc1dfa0a58c243e29e6065e22b134ccb132",
+    "sha256": "765493f343a7a057dd6699e370d4027557b2bf061393a62ad0ad8e4eaeb00686",
     "overlay": false
   },
   "ble_manager.py": {
     "source": "ble_manager.py",
-    "sha256": "5ede2596068de53cb87402cc7c838431a6740f5f80456157838351b21e4bf0ae",
+    "sha256": "4d5c82cb4a050eae959c63ca94a9ee0daa49c09582861b1759b17d0522b51425",
     "overlay": false
   },
   "config.py": {
@@ -21,17 +21,17 @@
   },
   "energy.py": {
     "source": "energy.py",
-    "sha256": "44b841d5c0d56a1b900957335dd64332046e2f229759eb8cafd12fddd9134318",
+    "sha256": "4ab20f9b8d77dcfb2a54ac5b09865eabc9f105739db39d84c2c186eacec06193",
     "overlay": false
   },
   "ha_server.py": {
     "source": "ha_server.py",
-    "sha256": "ce595d099bca12d639743f83e1865c8952c4fb26dd4ffc975307320b609864e1",
+    "sha256": "92c3a1e77115d92f677f82c6bf47af9d293f9059ec7247eed82011dd0b8ed7ea",
     "overlay": false
   },
   "history.py": {
     "source": "history.py",
-    "sha256": "2bc30e136e24fe26bdee58c1d0f61a409f9bc4befdbeaf1700bdf1f5073efbea",
+    "sha256": "f58de6099cfd3a10e65612b6e68f11120f6f9b3d336d2a69e9d3f7b47ec19c2c",
     "overlay": false
   },
   "src/cuktech_ble/__init__.py": {
@@ -46,7 +46,7 @@
   },
   "src/cuktech_ble/controller.py": {
     "source": "src/cuktech_ble/controller.py",
-    "sha256": "7bcda4394920d8693eaf1e5f3e8359a07414a2fe2235a3ff1117f1347dde1744",
+    "sha256": "184038e9a26400e8a63bed7c854ee383092f0468c12fe4c4f7fe4858afda4945",
     "overlay": false
   },
   "src/cuktech_ble/protocol.py": {
@@ -66,32 +66,32 @@
   },
   "web/config.html": {
     "source": "web/config.html",
-    "sha256": "7be95f67d477f09699c49d69be3f85e8378d3b2a46d0f5c582f553920c13a9e3",
+    "sha256": "e989072a3f3ee883294e077874a6afe538076d59ff40f2bdeebea6d0ea565f9d",
     "overlay": true
   },
   "web/index.html": {
     "source": "web/index.html",
-    "sha256": "858c493dd42f1464601cc2137444e1233493768eb1dfa77145447453a48e98f6",
+    "sha256": "03537b41e2d5ae94ead199eaa2e81e820ebf06a87e8d6c82d4e690ccf212ca4c",
     "overlay": true
   },
   "web/phone.html": {
     "source": "web/phone.html",
-    "sha256": "e4d18bab87a68c93de6cea275395ea862ef775bff1d62f05269f97779227c935",
+    "sha256": "3cb25d6a6eec82104886b98b12d35542948c53cea832151f8723832af64f3b58",
     "overlay": false
   },
   "web/static/app.js": {
     "source": "web/static/app.js",
-    "sha256": "6e4dd32f97356d0e1b0b9b043ac5b1beef287b54e72b130104044a061e77a46e",
+    "sha256": "753d7627032ccec2d73b315029504f4a63356047002596a3ea9d9a3a6337d5b0",
     "overlay": true
   },
   "web/static/charge_history.js": {
     "source": "web/static/charge_history.js",
-    "sha256": "9388b7ea8ab1cf1e9196eeae04763654551d6a39233884eab25a3c7d2fedff47",
+    "sha256": "8da467c15c42793a5ace6a506562d8926753c9893bb7a5a87650179e4e681f19",
     "overlay": false
   },
   "web/static/charge_limit.js": {
     "source": "web/static/charge_limit.js",
-    "sha256": "0ba756991dc303d448d40c25562a50b84432a261bc2fe279b8bc4b091f3ffab6",
+    "sha256": "9c16f9ea57ed780cab7e8e5dd538364dafbb36b230779555eaefc652ef6c9b26",
     "overlay": false
   },
   "web/static/charger.png": {
@@ -116,12 +116,12 @@
   },
   "web/static/countdown.html": {
     "source": "web/static/countdown.html",
-    "sha256": "15a4775285bd36d555e40e5daf0bcfc96a688ff6713f3facbebc0d900f222af5",
+    "sha256": "be383d19f3faa6a6981170f7ed823a5bf27d67c54fb7be3ebc5e58a82e1e3df9",
     "overlay": false
   },
   "web/static/device_info.html": {
     "source": "web/static/device_info.html",
-    "sha256": "7e7402597ebdf645caf8a9238e64d39348315626e4748b3036f1caf7cbe6671b",
+    "sha256": "1d6b26ba023e73d9a63b775f9d3094833827cecf2cadedb0749141a1246d4517",
     "overlay": false
   },
   "web/static/favicon.ico": {
@@ -136,17 +136,17 @@
   },
   "web/static/index.css": {
     "source": "web/static/index.css",
-    "sha256": "b9f7f1f9c30746fc758873faf8e6ea6c68f69dce91c39e09f38fb9e1a93f8812",
+    "sha256": "6039f45673bee30bd8630b2bf5d6b537518041173b7230b5a23fb07ba8fb1b64",
     "overlay": true
   },
   "web/static/locales/en.js": {
     "source": "web/static/locales/en.js",
-    "sha256": "4887520735a92ed406efcddb1233a19bcdff053ac4f9941142b6ed72cc404ad9",
+    "sha256": "291ada8c9048226b4694ed90747f9eb3808649f94ab97d7139737b794667da8a",
     "overlay": true
   },
   "web/static/locales/zh-CN.js": {
     "source": "web/static/locales/zh-CN.js",
-    "sha256": "99e2b38d9211cdf1659472221d516739505ec77399b8d8c7bf7148ca8734d406",
+    "sha256": "8e778263c80821ce6f0d232f358c2ddcef7aec7c0efba8f8ed0c7f2750bb0c47",
     "overlay": true
   },
   "web/static/logo_footer.png": {
@@ -156,12 +156,12 @@
   },
   "web/static/phone.css": {
     "source": "web/static/phone.css",
-    "sha256": "6e04dd640631b29395068fede7bbf6ec0e8cada29f0a97816a7e6647de6b00f1",
+    "sha256": "d9c1da245a9ff2affff95eb14cdee13ab941367e5cf1350c69bdab4bdd636100",
     "overlay": false
   },
   "web/static/phone.js": {
     "source": "web/static/phone.js",
-    "sha256": "6a8200813766a4e38aef81cd9b5c2081cdb527c5d2b5579ecefd6f98f620abdc",
+    "sha256": "1642d7926292a43746dfc8b862467da7f8fc37e2681fa42fef9736fe36cf1501",
     "overlay": false
   },
   "web/static/plugin_imgs/main_card_ad1204u_unconnected.png": {
@@ -346,12 +346,12 @@
   },
   "web/static/port_monitor.html": {
     "source": "web/static/port_monitor.html",
-    "sha256": "3fc53964fc3ac3d075222d60f84dfc150926d1ee5ab4f741c1c577bf3f4dca38",
+    "sha256": "63d82bf0b92d68aa5e4c00305514c08fb51e5fbff8767e3b1fc1ef2b1186ad13",
     "overlay": false
   },
   "web/static/power_chart.html": {
     "source": "web/static/power_chart.html",
-    "sha256": "ebd99eb783da2b7e28291d0f2c84444de3d25c6b09998c247a99199292dbe06b",
+    "sha256": "a207da4ee06a5071d447da728f8f0cb08275d18154f74d5b080ba1d78e5af0de",
     "overlay": false
   },
   "web/static/update-check.js": {

@@ -59,7 +59,7 @@ class TestServerConfig:
         """Test default server config values."""
         config = ServerConfig()
         assert config.host == "0.0.0.0"
-        assert config.port == 8199
+        assert config.port == (18199 if sys.platform == 'win32' else 8199)
         assert config.log_level == "info"
         assert config.history_retention_days == 2
         assert config.reconnect_base_delay == 1.0

@@ -52,8 +52,12 @@ echo Web UI: http://localhost:18199/
 echo.
 
 set PYTHONUTF8=1
+set CUKTECH_LAUNCHER_RESTART=1
+:run_server
 "%PY%" -u "%SERVER%"
-goto :eof
+set "SERVER_EXIT=%ERRORLEVEL%"
+if "%SERVER_EXIT%"=="75" goto :run_server
+exit /b %SERVER_EXIT%
 
 :fail
 echo.

@@ -4,7 +4,7 @@
 
 手机直接连接充电器，不需要电脑、NAS 或另行部署 BLE Server。
 
-应用保留原项目的手机界面、其它管理页面、主题、语言、充电曲线、协议开关、端口控制、倒计时、设置、充电历史、电量统计及小米云设备凭据获取。Android 版不提供 MQTT 和巴法云设置。原业务引擎通过 Chaquopy 在应用进程内运行，蓝牙传输使用 Android BluetoothGatt，数据写入应用私有存储。
+应用保留原项目的手机界面、其它管理页面、主题、语言、充电曲线、协议开关、端口控制、倒计时、设置、充电历史、电量统计及小米云设备凭据获取。Android 版保留 MQTT 和巴法云设置，默认关闭，启用后按用户配置访问对应服务。原业务引擎通过 Chaquopy 在应用进程内运行，蓝牙传输使用 Android BluetoothGatt，数据写入应用私有存储。
 
 ## 安装和使用
 
@@ -29,7 +29,7 @@ Android 7.0+；APK 包含 arm64-v8a 和 x86_64。真实充电器的连接稳定�
 - `tools/verify_ui_i18n.py`：检查副本界面用到的语言键是否齐全、有无冗余与硬编码中文。
 - `tests/`、`app/src/test/`：Android 适配层与原生辅助组件测试。
 
-仓库的上游自动同步已排除 `android/`，避免覆盖此独立版本。需要升级原业务引擎时，主动运行 `python android/tools/sync_engine.py` 并重新验证和打包。注意 `web/` 中同时存在 Android 覆盖的界面（去掉 MQTT/巴法云、触摸样式、后台运行开关）时，改动要落在 `web/` 与 `android/overlays/` 两处；`python android/tools/sync_engine.py --check` 可校验副本等于“来源 + 覆盖”。
+仓库的上游自动同步已排除 `android/`，避免覆盖此独立版本。需要升级原业务引擎时，主动运行 `python android/tools/sync_engine.py` 并重新验证和打包。注意 `web/` 中同时存在 Android 覆盖的界面（触摸样式、后台运行开关）时，改动要落在 `web/` 与 `android/overlays/` 两处；`python android/tools/sync_engine.py --check` 可校验副本等于“来源 + 覆盖”。
 
 ## 构建
 

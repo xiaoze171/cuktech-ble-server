@@ -33,15 +33,15 @@ class AndroidConfigurationTests(unittest.TestCase):
             self.assertEqual(data['ble']['token'], '00112233445566778899aabb')
             self.assertEqual(data['server']['history_db_path'], str(Path(folder) / 'port_history.db'))
 
-    def test_legacy_cloud_integrations_are_forced_off(self):
+    def test_user_selected_cloud_integrations_survive_restart(self):
         with tempfile.TemporaryDirectory() as folder:
             import yaml
             path = Path(folder) / 'config.yaml'
             path.write_text('mqtt:\n  enabled: true\nbemfa:\n  enabled: true\n', encoding='utf-8')
             self.config.prepare_config(folder)
             data = yaml.safe_load(path.read_text(encoding='utf-8'))
-            self.assertFalse(data['mqtt']['enabled'])
-            self.assertFalse(data['bemfa']['enabled'])
+            self.assertTrue(data['mqtt']['enabled'])
+            self.assertTrue(data['bemfa']['enabled'])
 
     def test_invalid_credential_is_rejected_and_masked_existing_value_is_allowed(self):
         self.assertIsNotNone(self.config.validate_update({'ble': {'token': 'xyz'}}))

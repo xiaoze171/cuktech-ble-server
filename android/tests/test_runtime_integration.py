@@ -57,8 +57,8 @@ class RuntimeIntegrationTests(unittest.TestCase):
         # directory so src imports cannot accidentally resolve from the repo.
         with tempfile.TemporaryDirectory() as cwd:
             result = subprocess.run(
-                [sys.executable, '-I', str(Path(__file__).resolve()), '--isolated-worker', scenario],
-                cwd=cwd, capture_output=True, text=True, timeout=90,
+                [sys.executable, '-I', '-X', 'utf8', str(Path(__file__).resolve()), '--isolated-worker', scenario],
+                cwd=cwd, capture_output=True, text=True, encoding='utf-8', timeout=90,
             )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
@@ -81,8 +81,8 @@ def exercise_runtime(self):
                         return response.read()
                 self.assertTrue(json.loads(request('/api/health'))['ok'])
                 config = json.loads(request('/api/config'))['config']
-                self.assertNotIn('mqtt', config)
-                self.assertNotIn('bemfa', config)
+                self.assertFalse(config['mqtt']['enabled'])
+                self.assertFalse(config['bemfa']['enabled'])
                 self.assertEqual(request('/phone.html'), (PYTHON_DIR / 'web/phone.html').read_bytes())
                 assets = ('/static/locales/en.js', '/static/plugin_imgs/main_card_ad1204u_unconnected.png')
                 for asset in assets:
@@ -93,13 +93,16 @@ def exercise_runtime(self):
                 self.assertEqual(rejected.exception.code, 400)
                 result = json.loads(request('/api/config', {'config': {'server': {'log_level': 'warning'}}}))
                 self.assertTrue(result['ok'])
-                request('/api/config', {'config': {'mqtt': {'enabled': True}, 'bemfa': {'enabled': True}}})
+                request('/api/config', {'config': {'mqtt': {'enabled': False, 'topic_prefix': 'test/charger'}, 'bemfa': {'enabled': False}}})
                 time.sleep(1.8)
                 self.assertTrue(json.loads(request('/api/health'))['ok'])
                 for asset in assets:
                     self.assertEqual(request(asset), (PYTHON_DIR / 'web' / asset.lstrip('/')).read_bytes())
                 self.assertEqual(json.loads(request('/api/web-language'))['language'], 'en')
                 self.assertEqual(json.loads(request('/api/config'))['config']['server']['log_level'], 'warning')
+                self.assertEqual(json.loads(request('/api/config'))['config']['mqtt']['topic_prefix'], 'test/charger')
+                modes = json.loads(request('/api/port-modes', {'port': 'c2', 'permanent': True}))
+                self.assertEqual(modes['permanent_ports'], ['c2'])
                 self.assertEqual(native.scans, 0, 'Missing credentials must never initiate a BLE scan')
                 android_runtime.stop()
                 self.assertFalse(json.loads(android_runtime.status())['running'])
@@ -110,6 +113,7 @@ def exercise_runtime(self):
                 for asset in assets:
                     self.assertEqual(request(asset), (PYTHON_DIR / 'web' / asset.lstrip('/')).read_bytes())
                 self.assertEqual(json.loads(request('/api/web-language'))['language'], 'en')
+                self.assertEqual(json.loads(request('/api/port-modes'))['permanent_ports'], ['c2'])
                 self.assertTrue((Path(folder) / 'port_history.db').exists())
                 import cuktech_ble.protocol
                 import src.cuktech_ble.protocol
