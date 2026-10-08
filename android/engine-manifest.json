@@ -26,7 +26,7 @@
   },
   "ha_server.py": {
     "source": "ha_server.py",
-    "sha256": "92c3a1e77115d92f677f82c6bf47af9d293f9059ec7247eed82011dd0b8ed7ea",
+    "sha256": "96dec36a59e1e30411fab33bfd79a8af1b237b4971e4a165561a9d8677d2ec0b",
     "overlay": false
   },
   "history.py": {

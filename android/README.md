@@ -1,6 +1,6 @@
 # CUKTECH 独立 Android 版
 
-最新交付 APK 统一放在项目根目录：`../Cuktech-1.1.0-android.apk`。蓝牙恢复与功率曲线的本轮验证见 [VALIDATION-2026-09-25.md](VALIDATION-2026-09-25.md)。Gradle 构建输出目录仅用于构建。
+最新版本为 **1.1.5**（versionCode 115），安装包为 `Cuktech-1.1.5-android.apk`，可从 [GitHub Releases](https://github.com/xiaoze171/cuktech-ble-server/releases/tag/V1.1.5) 下载。构建后的交付副本保存在项目根目录，Gradle 输出目录仅用于构建。上游合并与安全验证见 [合并记录](../docs/upstream-merge-2026-10-08.md)。
 
 手机直接连接充电器，不需要电脑、NAS 或另行部署 BLE Server。
 
@@ -8,7 +8,7 @@
 
 ## 安装和使用
 
-1. 安装项目根目录的 `Cuktech-1.1.0-android.apk`，允许附近设备/蓝牙权限；Android 11 及更早版本需要定位权限和开启系统定位以扫描 BLE。
+1. 下载并安装 `Cuktech-1.1.5-android.apk`，允许附近设备/蓝牙权限；Android 11 及更早版本需要定位权限和开启系统定位以扫描 BLE。
 2. 允许通知，便于查看后台连接状态及停止服务。
 3. 从原界面左上角进入配置，输入 MAC 和 Token（24 位十六进制），或使用小米云扫码获取。BLE Key 可同时保存。
 4. 保存配置后本地业务服务会自动重启，手机连接充电器。
